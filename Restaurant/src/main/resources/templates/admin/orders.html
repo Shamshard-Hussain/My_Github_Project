@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Restaurant</title>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo -->
+    <h1 class="logo">FoodTime</h1>
+    <!-- List of menus -->
+    <div class="sidebar-menus">
+        <a href="adminHome"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+        <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+        <a  href="/admin/productsPage" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+        <a href="#"><ion-icon name="notifications-outline"></ion-icon>Notification</a>
+        <a class="active" href="orders"><ion-icon name="cart-outline"></ion-icon>Orders</a>
+        <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+    </div>
+    <!-- Logout -->
+    <div class="sidebar-logout">
+        <form action="/logout" method="get">
+            <a href="#" onclick="confirmLogout(event)"> <ion-icon name="log-out-outline"></ion-icon> Logout</a>
+        </form>
+    </div>
+</div>
+
+<div class="main">
+    <!-- Main navbar-->
+    <div class="main-navbar">
+        <!-- Menu when appear on mobile version -->
+        <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+        <!-- Search bar -->
+        <div class="search">
+            <input type="text" placeholder="What you want to eat?">
+            <button class="search-btn">Search</button>
+        </div>
+        <!-- Profile icon on left side of navbar-->
+        <div class="profile">
+            <a class="cart" href="#"><ion-icon name="cart-outline"></ion-icon></a>
+            <a class="user" href="#"><ion-icon name="person-outline"></ion-icon> </a>
+        </div>
+    </div>
+
+    <!-- Products lists -->
+    <div class="product-list-wrap">
+        <div class="prod-header">
+            <h1>Orders Listing</h1>
+        </div>
+        <div class="product-listing">
+            <table id="productTable" class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Product rows will be added dynamically -->
+                <tr>
+                    <td><img src="product1.jpg" alt="Product 1"></td>
+                    <td>Product 1</td>
+                    <td>$10.00</td>
+                    <td>Pending</td>
+                    <td>
+                        <a href="#" class="btn btn-warning btn-sm ">Edit</a>
+                        <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Notification HTML -->
+<div id="messageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notification</h5>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Message goes here...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Access Denied Message -->
+<div th:if="${accessDenied}">
+    <script>
+        handleAccessDenied();
+    </script>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+</body>
+
+</html>

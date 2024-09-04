@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <title>Restaurant</title>
+</head>
+
+<body>
+
+<!--sidebar -->
+<div class="sidebar">
+    <!-- Logo -->
+    <h1 class="logo">FoodTime</h1>
+    <!-- List of menus -->
+    <div class="sidebar-menus">
+        <a class="active"  href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+        <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+        <a href="#"><ion-icon name="notifications-outline"></ion-icon>Notification</a>
+        <a href="orders.html" th:href="@{/admin/orders}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
+        <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
+        <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
+        <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+        <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+        <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>User</a>
+        <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+    </div>
+
+    <!-- Logout -->
+    <div class="sidebar-logout">
+        <form action="/logout" method="get">
+        <a href="#" onclick="confirmLogout(event)"> <ion-icon name="log-out-outline"></ion-icon> Logout</a>
+        </form>
+    </div>
+</div>
+<!-- main-->
+<div class="main">
+    <!-- main navbar-->
+    <div class="main-navbar">
+        <!-- menu when appear on mobile version -->
+        <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+        <!-- search bar -->
+        <div class="search">
+            <input type="text" placeholder="What you want to eat?">
+            <button class="search-btn">Search</button>
+        </div>
+        <!-- Profile icon on left side of navbar-->
+        <div class="profile">
+            <!-- User Icon -->
+            <a class="user" href="#" onclick="showAdminDetails(event)">
+                <ion-icon name="person-outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Admin Details Popup -->
+    <div id="adminDetailsPopup" class="adminPopup hidden">
+        <div class="adminPopup-content">
+            <span class="adminClose" onclick="closePopup()">&times;</span>
+            <h3>Admin Details</h3>
+            <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
+            <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+            <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
+            <p><strong>Email:</strong> <span id="popupEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+            <p><strong>Role:</strong> <span id="popupRole"></span></p>
+        </div>
+    </div>
+    <script>
+        function showAdminDetails(event) {
+            event.preventDefault();
+
+            fetch('/admin/getDetails')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Failed to fetch admin details');
+                    }
+                })
+                .then(data => {
+                    document.getElementById('popupUserId').textContent = data.userId;
+                    document.getElementById('popupFirstName').textContent = data.firstName;
+                    document.getElementById('popupLastName').textContent = data.lastName;
+                    document.getElementById('popupEmail').textContent = data.email;
+                    document.getElementById('popupPhone').textContent = data.phone;
+                    document.getElementById('popupRole').textContent = data.role;
+
+                    const popup = document.getElementById('adminDetailsPopup');
+                    popup.classList.remove('hidden');
+                    popup.style.display = 'block';
+
+                    // Close the popup if clicking outside of it
+                    window.addEventListener('click', function (event) {
+                        if (!popup.contains(event.target) && !event.target.closest('.user')) {
+                            closePopup();
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching admin details:', error);
+                    alert('Failed to load admin details.');
+                });
+        }
+
+        function closePopup() {
+            const popup = document.getElementById('adminDetailsPopup');
+            popup.style.display = 'none';
+        }
+
+    </script>
+
+    <!-- main highlight -->
+    <div class="main-highlight">
+        <!-- title section and arrow -->
+        <div class="main-header">
+            <h2 class="main-title">Recommendations</h2>
+            <div class="main-arrow">
+                <ion-icon class="back" name="chevron-back-circle-outline"></ion-icon>
+                <ion-icon class="next" name="chevron-forward-circle-outline"></ion-icon>
+            </div>
+        </div>
+        <!-- highlight menu -->
+
+        <div class="highlight-wrapper">
+            <div class="highlight-card">
+                <img class="highlight-img" src="images/salad.jpg">
+                <div class="highlight-desc">
+                    <h4>Fresh Salad</h4>
+                    <p>$42.50</p>
+                </div>
+            </div>
+
+            <div class="highlight-card">
+                <img class="highlight-img" src="images/salad.jpg">
+                <div class="highlight-desc">
+                    <h4>Fresh Salad</h4>
+                    <p>$42.50</p>
+                </div>
+            </div>
+
+            <div class="highlight-card">
+                <img class="highlight-img" src="images/salad.jpg">
+                <div class="highlight-desc">
+                    <h4>Fresh Salad</h4>
+                    <p>$42.50</p>
+                </div>
+            </div>
+
+            <div class="highlight-card">
+                <img class="highlight-img" src="images/salad.jpg">
+                <div class="highlight-desc">
+                    <h4>Fresh Salad</h4>
+                    <p>$42.50</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+    <!-- main menus / order -->
+    <div class="main-menus">
+        <!-- filter section -->
+        <div class="main-filter">
+            <div>
+                <h2 class="main-title">Menu <br>Category</h2>
+                <div class="main-arrow">
+                    <ion-icon class="back-menus" name="chevron-back-circle-outline"></ion-icon>
+                    <ion-icon class="next-menus"  name="chevron-forward-circle-outline"></ion-icon>
+                </div>
+            </div>
+            <div class="filter-wrapper">
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="restaurant-outline"></ion-icon>
+                    </div>
+                    <p>All Menus</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="fast-food-outline"></ion-icon>
+                    </div>
+                    <p>Burger</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="pizza-outline"></ion-icon>
+                    </div>
+                    <p>Pizza</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="wine-outline"></ion-icon>
+                    </div>
+                    <p>Wine</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="ice-cream-outline"></ion-icon>
+                    </div>
+                    <p>Ice Cream</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="cafe-outline"></ion-icon>
+                    </div>
+                    <p>Coffee</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="fish-outline"></ion-icon>
+                    </div>
+                    <p>Seafood</p>
+                </div>
+                <div class="filter-card">
+                    <div class="filter-icon">
+                        <ion-icon name="menu"></ion-icon>
+                    </div>
+                    <p>Healthy</p>
+                </div>
+            </div>
+        </div>
+        <hr class="divider">
+        <!-- List of food menus -->
+
+
+    <div class="main-detail">
+        <h2 class="main-title">New Order</h2>
+        <div class="detail-wrapper">
+            <div class="detail-card" th:each="product : ${Products}">
+                <img class="detail-img" th:src="@{/admin/image/{id}(id=${product.imageId})}">
+                <div class="detail-desc">
+                    <div class="detail-name" >
+                        <h4 th:text="${product.productName}"></h4>
+                        <p class="detail-sub" th:text="${product.description}"></p>
+                        <p class="price" th:text="${product.price}"></p>
+                    </div>
+                    <ion-icon class="detail-favorites" name="bookmark-outline"></ion-icon>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <img class="detail-img" src="images/seafood.jpg">
+                <div class="detail-desc">
+                    <div class="detail-name">
+                        <h4>Shrimp Soup</h4>
+                        <p class="detail-sub">Lorem ipsum dolor sit amet consectetur provident doloremque minima</p>
+                        <p class="price">$152.00</p>
+                    </div>
+                    <ion-icon class="detail-favorites" name="bookmark-outline"></ion-icon>
+                </div>
+            </div>
+            <div class="detail-card">
+                <img class="detail-img" src="images/pizza.jpg">
+                <div class="detail-desc">
+                    <div class="detail-name">
+                        <h4>Pizza</h4>
+                        <p class="detail-sub">Autem nam repellendus perferendis enim eum provident</p>
+                        <p class="price">$68.75</p>
+                    </div>
+                    <ion-icon class="detail-favorites" name="bookmark-outline"></ion-icon>
+                </div>
+            </div>
+            <div class="detail-card">
+                <img class="detail-img" src="images/pizza.jpg">
+                <div class="detail-desc">
+                    <div class="detail-name">
+                        <h4>Pizza</h4>
+                        <p class="detail-sub">Autem nam repellendus perferendis enim eum provident</p>
+                        <p class="price">$68.75</p>
+                    </div>
+                    <ion-icon class="detail-favorites" name="bookmark-outline"></ion-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+<!-- Access Denied Message -->
+<div th:if="${accessDenied}">
+    <script>
+        handleAccessDenied();
+    </script>
+</div>
+
+
+</body>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+
+</html>

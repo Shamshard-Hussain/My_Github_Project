@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Restaurant</title>
+  <link href="../../static/css/Styles.css" th:href="@{/css/user.css}" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+</head>
+
+<body>
+
+<header>
+  <a href="#" class="brand">Urban Palate</a>
+  <div class="home-menu-btn"></div>
+  <div class="navigation">
+    <div class="navigation-items">
+      <a href="#home">Home</a>
+      <a href="#foodMenu">Menu</a>
+      <a href="#reservation">Reservation</a>
+      <a href="#services">Services</a>
+      <a class="login" href="#">Profile</a>
+    </div>
+  </div>
+</header>
+
+
+
+
+
+<section id="home" class="home">
+  <!-- Load images from the database -->
+  <div th:each="item, iterStat : ${gallery}">
+    <img class="image-slide" th:src="@{/user/image(id=${item.imageId})}" th:alt="${item.headingName}" th:classappend="${iterStat.index == 0 ? 'active' : ''}">
+  </div>
+
+  <div class="home-content" th:each="item, iterStat : ${gallery}" th:classappend="${iterStat.index == 0 ? 'active' : ''}">
+    <h1 th:text="${item.headingName}">Wonderful.<br><span>Island</span></h1>
+    <p th:text="${item.description}">Description</p>
+  </div>
+
+  <div class="media-icons">
+    <a href="#"><i class="fab fa-facebook-f"></i></a>
+    <a href="#"><i class="fab fa-instagram"></i></a>
+    <a href="#"><i class="fab fa-twitter"></i></a>
+  </div>
+
+  <!-- Dynamic Slider Navigation Buttons -->
+  <div class="slider-navigation">
+    <div th:each="item, iterStat : ${gallery}" th:data-index="${iterStat.index}" th:classappend="${iterStat.index == 0 ? 'active' : ''}" class="nav-btn"></div>
+  </div>
+</section>
+
+
+
+
+
+
+
+<!---------Our Story------------->
+<!-- <div class="about-us">
+    <div class="about-section">
+        <div class="background-image image1"></div>
+        <div class="background-image image2"></div>
+        <div class="background-image image3"></div>
+        <div class="background-image image4"></div>
+        <div class="background-image image5"></div>
+        <div class="about-us-content">
+            <h1>About Us</h1>
+            <p>Welcome to our restaurant! We offer a wide variety of dishes made with the freshest ingredients. Our
+                mission is to provide an unforgettable dining experience for our guests.</p>
+        </div>
+    </div>
+
+</div> -->
+
+
+
+
+
+
+<!--------------------Food Menu------------------------------>
+<section id="foodMenu" class="menu">
+  <div class="menu-container">
+    <div class="menu-head">
+      <h2>Special Food Menu</h2>
+      <p>we take immense pride in offering a culinary journey that celebrates the rich flavors and
+        vibrant traditions of our cuisine. Our menu is thoughtfully crafted to bring you
+        a harmonious blend of time-honored recipes and contemporary flair, ensuring a
+        dining experience that delights all your senses.</p>
+    </div>
+
+    <div class="menu-navigation">
+      <button class="nav-arrow left-arrow">&lt;</button>
+      <div class="menu-btns">
+        <button type="button" class="menu-btn" id="Appetizers">Appetizers</button>
+        <button type="button" class="menu-btn" id="Salads">Salads</button>
+        <button type="button" class="menu-btn" id="Soup">Soup</button>
+        <button type="button" class="menu-btn" id="Chicken">Chicken</button>
+        <button type="button" class="menu-btn" id="Seafood">Seafood</button>
+        <button type="button" class="menu-btn" id="Prawns">Prawns</button>
+        <button type="button" class="menu-btn" id="Cuttlefish">Cuttlefish</button>
+        <button type="button" class="menu-btn" id="Beef">Beef</button>
+        <button type="button" class="menu-btn" id="Whole Fish">Whole Fish</button>
+        <button type="button" class="menu-btn" id="Vegetable">Vegetable</button>
+        <button type="button" class="menu-btn" id="Grilled Items">Grilled Items</button>
+        <button type="button" class="menu-btn" id="Rice">Rice</button>
+        <button type="button" class="menu-btn" id="Kottu">Kottu</button>
+        <button type="button" class="menu-btn" id="Noodles">Noodles</button>
+        <button type="button" class="menu-btn" id="Desserts">Desserts</button>
+        <button type="button" class="menu-btn" id="Soft Drinks">Soft Drinks</button>
+        <button type="button" class="menu-btn" id="Energy Drinks">Energy Drinks</button>
+        <button type="button" class="menu-btn" id="Milkshake">Milkshake</button>
+        <button type="button" class="menu-btn" id="Fresh Juice">Fresh Juice</button>
+        <button type="button" class="menu-btn" id="Mocktail">Mocktail</button>
+        <button type="button" class="menu-btn" id="Water">Water</button>
+      </div>
+      <button class="nav-arrow right-arrow">&gt;</button>
+    </div>
+
+    <div class="food-items" >
+      <!-- item -->
+      <div class="food-item Chicken" th:each="product : ${products}">
+        <div class="food-img">
+          <img th:src="@{/admin/image/{id}(id=${product.imageId})}" alt="food image">
+        </div>
+        <div class="food-content">
+          <h2 class="food-name" th:text="${product.productName}">Banana Bread With Butter & Milk</h2>
+          <div class="line"></div>
+          <h3 class="food-price" th:text="'Rs ' + ${product.price}+ '0'">Price</h3>
+          <ul class="rating">
+            <li><i class="fas fa-star"></i></li>
+            <li><i class="fas fa-star"></i></li>
+            <li><i class="fas fa-star"></i></li>
+            <li><i class="fas fa-star"></i></li>
+            <li><i class="far fa-star"></i></li>
+          </ul>
+          <p class="category">Categories: <span th:text="${product.category}"></span></p>
+          <div class="food-item-buttons">
+            <button class="btn view-btn"><i class="fas fa-eye"></i></button>
+            <button class="btn cart-btn"><i class="fas fa-shopping-cart"></i></button>
+          </div>
+        </div>
+      </div>
+      <!-- end of item -->
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<!-- Reservation-banner -->
+<section id="reservation" class="Reservation-banner">
+  <h2>BOOK YOUR TABLE NOW</h2>
+  <p>Secure your table online with a reservation cost of Rs.200.00, Experience convenience and ensure your spot at our restaurant effortlessly.</p>
+  <div class="Reservation-card-container">
+    <div class="Reservation-card-img">
+      <!-- image here -->
+    </div>
+
+    <div class="Reservation-card-content">
+      <h3>Reservation</h3>
+        <form id="reservation-form" class="Reservation-form" action="/user/book" method="POST" onsubmit="return openPopup()">
+
+
+        <div class="Reservation-form-row">
+          <input type="date" id="inputdate" name="date" value="" placeholder="Date" required>
+
+          <input type="time" id="inputtime" name="hours" required placeholder="Time">
+        </div>
+
+        <div class="Reservation-form-row">
+          <input type="text" name="name" placeholder="Full Name"
+                 pattern="[A-Za-z ]{2,50}"
+                 title="Full name should be 2 to 50 characters long and contain only letters and spaces."
+                 required>
+
+          <input type="text" name="phone" placeholder="Phone Number"
+                 pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+                 title="Phone number can include country code and should be in a valid format with numbers only."
+                 required>
+        </div>
+        <div class="Reservation-form-row">
+          <input type="number" name="persons" placeholder="How Many Persons?" min="1" required>
+          <input type="submit" value="BOOK TABLE">
+        </div>
+        <!-- Hidden Payment Fields -->
+        <input type="hidden" id="cardHolderName" name="cardHolderName">
+        <input type="hidden" id="cardNumber" name="cardNumber">
+        <input type="hidden" id="expiryDate" name="expiryDate">
+        <input type="hidden" id="cvc" name="cvc">
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Popup -->
+<div id="reservation-popup" class="payment-popup">
+  <div class="payment-popup-content">
+    <span class="payment-close" onclick="closePopup()">&times;</span>
+    <div class="payment">
+<!--      <div class="payment-logo">-->
+<!--        <p>p</p>-->
+<!--      </div>-->
+      <h2>Payment Gateway</h2>
+      <form id="payment-form">
+      <div class="Payment-form">
+        <div class="card space Payment-icon-relative">
+          <label class="label">Card holder:</label>
+          <input type="text" id="PcardHolderName" class="Payment-input"  name="cardHolderName" placeholder="Card Holder Name"
+                 pattern="[A-Za-z ]{2,30}" title="Card holder name should be 2 to 30 characters long and contain only letters and spaces." required>
+          <i class="fas fa-user"></i>
+        </div>
+
+        <div class="card space Payment-icon-relative">
+          <label class="label">Card number:</label>
+          <input type="text" id="PcardNumber" class="Payment-input" name="cardNumber" placeholder="xxxx-xxxx-xxxx-xxxx"
+                 pattern="\d{4}-\d{4}-\d{4}-\d{4}"
+                 title="Card number should be in the format xxxx-xxxx-xxxx-xxxx (16 digits separated by dashes)."
+                 maxlength="19"
+                 required>
+
+          <i class="far fa-credit-card"></i>
+        </div>
+
+        <div class="card-grp space">
+          <div class="Payment-card-item Payment-icon-relative">
+            <label class="label">Expiry date:</label>
+            <input type="text" id="PexpiryDate" class="Payment-input" name="expiryDate" placeholder="MM/YY"
+                   pattern="(0[1-9]|1[0-2])/\d{2}" title="Expiry date should be in MM/YY format" required maxlength="5" oninput="formatExpiryDate(this)">
+            <i class="far fa-calendar-alt"></i>
+          </div>
+
+          <div class="Payment-card-item Payment-icon-relative">
+            <label class="label">CVC:</label>
+            <input type="text" id="Pcvc" class="Payment-input"  name="cvc" placeholder="xxxx"
+                   pattern="[0-9]{3,4}" title="CVC should be either 3 or 4 digits long." maxlength="4" required>
+            <i class="fas fa-lock"></i>
+          </div>
+        </div>
+        <button type="submit" class="Payment-btn">Pay</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Service Card Slider -->
+<section id="services" class="services-slider">
+  <div class="slider">
+
+    <div class="slide" th:each="services : ${services}" th:style="'background-image: url(/admin/image/' + ${services.imageId} + ')'" >
+      <div class="service-content">
+        <h2 th:text="${services.headingName}">Service 1</h2>
+        <p th:text="${services.description}">Description.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+
+<!-- Contact us form -->
+<div class="contact-icon" onclick="togglePopup()">
+  <img src="/images/help.png" alt="Contact Us">
+</div>
+
+<div id="contact-popup" class="popup">
+  <div class="popup-content">
+    <span class="close" onclick="togglePopup()">&times;</span>
+    <h2>Contact Us</h2>
+    <form>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<!-- gallery -->
+<div class="gallery-container">
+  <!-- Gallery items will be injected here by JavaScript -->
+</div>
+
+<!-- Lightbox HTML structure -->
+<div class="lightbox" style="display: none;">
+  <div class="lightbox-content">
+    <img id="lightbox-image" alt="Lightbox Image">
+    <div class="lightbox-prev">&#10094;</div>
+    <div class="lightbox-next">&#10095;</div>
+  </div>
+</div>
+
+
+<!-- Location  -->
+<di class="location-Body">
+  <h1 class="location-h1">Our Locations</h1>
+
+  <div class="location-slider owl-carousel">
+
+    <div class="location-card" th:each="location : ${locations}">
+      <div class="img">
+        <img th:src="@{/admin/image/{id}(id=${location.imageId})}" />
+      </div>
+      <div class="location-content">
+        <div class="title" th:text="${location.city}">City</div>
+        <div class="sub-title" th:text="${location.phone}" ></div>
+        <p th:text="${location.address}"></p>
+        <p th:text="${location.email}"></p>
+        <!-- <a href="#" target="_blank">
+            <button>
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </a> -->
+      </div>
+    </div>
+  </div>
+</di>
+
+
+
+<!-- footer section starts  -->
+<div class="footer">
+  <h4>Urban Palate</h4>
+  <p>At Urban Palate,
+    we blend tradition with innovation to offer a unique dining experience.
+    Our menu features fresh,
+    locally sourced ingredients and time-honored recipes,
+    ensuring each meal is a delightful journey for your taste buds.
+    Welcome to our culinary haven!</p>
+  <!-- <p class="social">
+      <span><i class="fa fa-facebook"></i></span>
+      <span><i class="fa fa-twitter"></i></span>
+      <span><i class="fa fa-instagram"></i></span>
+      <span><i class="fa fa-reddit"></i></span>
+      <span><i class="fa fa-dribbble"></i></span>
+  </p> -->
+</div>
+<!-- footer section ends -->
+
+
+
+
+
+
+
+
+
+
+<!--<script src="script.js"></script>-->
+<script type="text/javascript" th:src="@{/js/user.js}" src="/static/css/js/admin.js"></script>
+</body>
+
+</html>

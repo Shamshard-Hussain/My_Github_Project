@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Restaurant</title>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo -->
+    <h1 class="logo">FoodTime</h1>
+    <!-- List of menus -->
+    <div class="sidebar-menus">
+        <a href="adminHome.html" th:href="@{/admin/adminHome}">
+            <ion-icon name="storefront-outline"></ion-icon>
+            Home</a>
+        <a href="#">
+            <ion-icon name="receipt-outline"></ion-icon>
+            Reports</a>
+        <a href="productsPage.html" th:href="@{/admin/productsPage}">
+            <ion-icon name="pizza-outline"></ion-icon>
+            Products</a>
+        <a href="#">
+            <ion-icon name="notifications-outline"></ion-icon>
+            Notification</a>
+        <a href="orders.html" th:href="@{/admin/orders}">
+            <ion-icon name="table-outline"></ion-icon>
+            Reservation</a>
+        <a class="active" href="locations.html" th:href="@{/admin/locations}">
+            <ion-icon name="location-outline"></ion-icon>
+            Locations</a>
+        <a href="Services.html" th:href="@{/admin/Services}">
+            <ion-icon name="construct-outline"></ion-icon>
+            Service</a>
+        <a href="gallery1.html" th:href="@{/admin/gallery1}">
+            <ion-icon name="image-outline"></ion-icon>
+            Gallery</a>
+        <a href="ImageCards.html" th:href="@{/admin/ImageCards}">
+            <ion-icon name="image-outline"></ion-icon>
+            Images</a>
+    </div>
+    <!-- Logout -->
+    <div class="sidebar-logout">
+        <form action="/logout" method="get">
+            <a href="#" onclick="confirmLogout(event)">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Logout</a>
+        </form>
+    </div>
+</div>
+
+<div class="main">
+    <!-- Main navbar-->
+    <div class="main-navbar">
+        <!-- Menu when appear on mobile version -->
+        <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+        <!-- Search bar -->
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Search........">
+            <button class="search-btn" onclick="filterTable()">Search</button>
+        </div>
+        <!-- Profile icon on left side of navbar-->
+        <div class="profile">
+            <a class="user" href="#">
+                <ion-icon name="person-outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+    <!-- Products lists -->
+    <div class="product-list-wrap">
+        <div class="prod-header">
+            <h1>Locations Listing</h1>
+            <button class="add-product-btn" onclick="openModal()">Add Locations</button>
+        </div>
+        <div class="product-listing">
+            <table id="productTable" class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>ID</th>
+                    <th>City</th>
+                    <th>Address</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <!-- Thymeleaf loop to populate rows -->
+                <tr th:each="location : ${locations}" th:data-id="${location.id}">
+                    <td>
+                        <img th:src="@{/admin/image/{id}(id=${location.imageId})}" alt="Product Image">
+                    </td>
+                    <td th:text="${location.id}"></td>
+                    <td th:text="${location.city}"></td>
+                    <td th:text="${location.address}"></td>
+                    <td th:text="${location.phone}"></td>
+                    <td th:text="${location.email}"></td>
+                    <td>
+
+                        <button onclick="confirmDelete(this)" th:data-id="${location.id}" class="btn btn-danger btn-sm">Delete</button>
+                        <a href="#" class="btn btn-warning btn-sm"
+                            th:data-id="${location.id}"
+                            th:data-city="${location.city}"
+                            th:data-address="${location.address}"
+                            th:data-phone="${location.phone}"
+                            th:data-email="${location.email}"
+                           th:data-image-id="${location.imageId}"
+                            onclick="openUpdateModal(this)">Edit</a>
+
+                    </td>
+                    </td>
+                </tr>
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="4" style="text-align: center;">No results found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(button) {
+        const locationId = button.getAttribute('data-id'); // Retrieve the id from the button's data attribute
+        if (confirm('Are you sure you want to delete this location?')) {
+            fetch(`/admin/deleteLocation/${locationId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Location deleted successfully!');
+                        window.location.reload();  // Reload the page to reflect changes
+                    } else {
+                        alert('Failed to delete location.');
+                        console.error('Response:', response);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to delete location.');
+                });
+        }
+    }
+
+
+
+</script>
+
+
+<!-- Modal for adding Location -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Add Locations Content</h2>
+        <form id="galleryForm" action="/admin/addLocations" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="LocationsId" name="id">
+
+            <label for="LocationsCity">City</label>
+            <input type="text" id="LocationsCity" name="City" class="form-control" required>
+
+            <label for="LocationAddress">Address</label>
+            <input type="text" id="LocationAddress" name="Address" class="form-control" required>
+
+            <label for="LocationsPhone">Phone</label>
+            <input type="number" id="LocationsPhone" name="Phone" class="form-control" required>
+
+            <label for="LocationsEmail">Email</label>
+            <input type="email" id="LocationsEmail" name="Email" class="form-control" required>
+
+            <label for="Image">Image</label>
+            <input type="file" id="Image" name="image" accept="image/*" class="form-control" required>
+            <img id="ImagePreview" src="" alt="Image Preview" style="max-width: 100%; height: 200px; display: none;">
+            <button type="submit" class="btn btn-primary mt-3" id="submitButton">Add</button>
+        </form>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notification</h5>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Message goes here...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="close" class="btn btn-secondary"data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for updating Location -->
+<div id="updateLocationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="CloseupdateLocationModal"  >&times;</span>
+        <h2 id="Title">Update Location Content</h2>
+        <form id="updateLocationForm" action="/admin/updateLocation" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="updateLocationId" name="id">
+
+            <label for="updateCity">City</label>
+            <input type="text" id="updateCity" name="city" class="form-control" required>
+
+            <label for="updateAddress">Address</label>
+            <input type="text" id="updateAddress" name="address" class="form-control" required>
+
+            <label for="updatePhone">Phone</label>
+            <input type="text" id="updatePhone" name="phone" class="form-control" required>
+
+            <label for="updateEmail">Email</label>
+            <input type="email" id="updateEmail" name="email" class="form-control" required>
+
+            <label for="editImage">Image</label>
+            <input type="file" id="editImage" name="image" accept="image/*" class="form-control" onchange="previewImage(event)">
+            <img id="editImagePreview" src="#" alt="Image Preview"
+                 style="max-width: 100%; height: 200px; border-radius: 4px; display: none;">
+
+
+            <button type="submit" class="btn btn-primary mt-3" >Update</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function openUpdateModal(buttonElement) {
+        const locationId = buttonElement.getAttribute('data-id');
+        const city = buttonElement.getAttribute('data-city');
+        const address = buttonElement.getAttribute('data-address');
+        const phone = buttonElement.getAttribute('data-phone');
+        const email = buttonElement.getAttribute('data-email');
+        const imageId = buttonElement.getAttribute('data-image-id');  // Add this attribute for the image ID
+
+        document.getElementById('updateLocationId').value = locationId;
+        document.getElementById('updateCity').value = city;
+        document.getElementById('updateAddress').value = address;
+        document.getElementById('updatePhone').value = phone;
+        document.getElementById('updateEmail').value = email;
+
+        const imagePreview = document.getElementById('editImagePreview');
+        if (imageId) {
+            imagePreview.src = `/admin/image/${imageId}`; // Set the image source to the correct URL
+            imagePreview.style.display = 'block';  // Show the image preview
+        } else {
+            imagePreview.style.display = 'none'; // Hide the image preview if no image
+        }
+
+        document.getElementById('updateLocationModal').style.display = 'block';
+
+        // Close the modal
+        document.getElementById('CloseupdateLocationModal').addEventListener('click', function () {
+            document.getElementById('updateLocationModal').style.display = 'none';
+        });
+    }
+
+
+</script>
+<!-- Access Denied Message -->
+<div th:if="${accessDenied}">
+    <script>
+        handleAccessDenied();
+    </script>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+
+<script>
+
+</script>
+
+
+</body>
+
+</html>
