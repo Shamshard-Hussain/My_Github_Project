@@ -2,133 +2,51 @@
 document.addEventListener('DOMContentLoaded', function () {
     const menuBtn = document.querySelector('.home-menu-btn');
     const navigation = document.querySelector('.navigation');
-    const navLinks = document.querySelectorAll('.navigation-items a'); // Select all navigation links
 
     menuBtn.addEventListener('click', function () {
         menuBtn.classList.toggle('active');
         navigation.classList.toggle('active');
     });
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', function () {
-            navigation.classList.remove('active'); // Hide the navigation
-            menuBtn.classList.remove('active'); // Reset the menu button state
-        });
-    });
 });
 
 
-
-// //Food menu
-//     // Handle menu button clicks to filter products
-//     const menuBtns = document.querySelectorAll('.menu-btn');
-//     const foodItems = document.querySelectorAll('.food-item');
-//
-//     // Initially show all products or the default category
-//     let activeCategory = 'Appetizers'; // or set this to any default category
-//     showFoodMenu(activeCategory);
-//
-//     menuBtns.forEach((btn) => {
-//     btn.addEventListener('click', () => {
-//         resetActiveBtn();
-//         activeCategory = btn.id;
-//         showFoodMenu(activeCategory);
-//         btn.classList.add('active-btn');
-//     });
-// });
-//
-//     function resetActiveBtn() {
-//     menuBtns.forEach((btn) => {
-//         btn.classList.remove('active-btn');
-//     });
-// }
-//
-//     function showFoodMenu(category) {
-//     foodItems.forEach((item) => {
-//         const itemCategory = item.querySelector('.category span').textContent.trim();
-//         if (category === 'Appetizers' || itemCategory === category) {
-//             item.style.display = "grid";
-//         } else {
-//             item.style.display = "none";
-//         }
-//     });
-// }
-//
-//     // Handle the navigation arrows for category buttons
-//     document.addEventListener("DOMContentLoaded", () => {
-//     const btnContainer = document.querySelector(".menu-btns");
-//     const btns = Array.from(btnContainer.children);
-//     const leftArrow = document.querySelector(".left-arrow");
-//     const rightArrow = document.querySelector(".right-arrow");
-//     let startIndex = 0;
-//     const visibleCount = 3;
-//
-//     // Function to update the visibility of the buttons
-//     const updateButtons = () => {
-//     btns.forEach((btn, index) => {
-//     btn.style.display = (index >= startIndex && index < startIndex + visibleCount) ? "block" : "none";
-// });
-// };
-//
-//     // Event listeners for arrows
-//     leftArrow.addEventListener("click", () => {
-//     if (startIndex > 0) {
-//     startIndex--;
-//     updateButtons();
-// }
-// });
-//
-//     rightArrow.addEventListener("click", () => {
-//     if (startIndex < btns.length - visibleCount) {
-//     startIndex++;
-//     updateButtons();
-// }
-// });
-//
-//     // Initial display update
-//     updateButtons();
-// });
-
-
-document.addEventListener("DOMContentLoaded", () => {
+//Food menu
     // Handle menu button clicks to filter products
     const menuBtns = document.querySelectorAll('.menu-btn');
     const foodItems = document.querySelectorAll('.food-item');
 
-    // Initially show the first category (Appetizers or the first in the list)
-    if (menuBtns.length > 0) {
-        let activeCategory = menuBtns[0].id; // Automatically set the first button as active
-        showFoodMenu(activeCategory);
-        menuBtns[0].classList.add('active-btn'); // Highlight the first button
-    }
+    // Initially show all products or the default category
+    let activeCategory = 'featured'; // or set this to any default category
+    showFoodMenu(activeCategory);
 
     menuBtns.forEach((btn) => {
-        btn.addEventListener('click', () => {
-            resetActiveBtn();
-            activeCategory = btn.id;
-            showFoodMenu(activeCategory);
-            btn.classList.add('active-btn');
-        });
+    btn.addEventListener('click', () => {
+        resetActiveBtn();
+        activeCategory = btn.id;
+        showFoodMenu(activeCategory);
+        btn.classList.add('active-btn');
     });
+});
 
     function resetActiveBtn() {
-        menuBtns.forEach((btn) => {
-            btn.classList.remove('active-btn');
-        });
-    }
+    menuBtns.forEach((btn) => {
+        btn.classList.remove('active-btn');
+    });
+}
 
     function showFoodMenu(category) {
-        foodItems.forEach((item) => {
-            const itemCategory = item.querySelector('.category span').textContent.trim();
-            if (category === itemCategory) {
-                item.style.display = "grid";
-            } else {
-                item.style.display = "none";
-            }
-        });
-    }
+    foodItems.forEach((item) => {
+        const itemCategory = item.querySelector('.category span').textContent.trim();
+        if (category === 'featured' || itemCategory === category) {
+            item.style.display = "grid";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
 
     // Handle the navigation arrows for category buttons
+    document.addEventListener("DOMContentLoaded", () => {
     const btnContainer = document.querySelector(".menu-btns");
     const btns = Array.from(btnContainer.children);
     const leftArrow = document.querySelector(".left-arrow");
@@ -138,34 +56,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to update the visibility of the buttons
     const updateButtons = () => {
-        btns.forEach((btn, index) => {
-            btn.style.display = (index >= startIndex && index < startIndex + visibleCount) ? "block" : "none";
-        });
-    };
+    btns.forEach((btn, index) => {
+    btn.style.display = (index >= startIndex && index < startIndex + visibleCount) ? "block" : "none";
+});
+};
 
     // Event listeners for arrows
     leftArrow.addEventListener("click", () => {
-        if (startIndex > 0) {
-            startIndex--;
-            updateButtons();
-        }
-    });
+    if (startIndex > 0) {
+    startIndex--;
+    updateButtons();
+}
+});
 
     rightArrow.addEventListener("click", () => {
-        if (startIndex < btns.length - visibleCount) {
-            startIndex++;
-            updateButtons();
-        }
-    });
+    if (startIndex < btns.length - visibleCount) {
+    startIndex++;
+    updateButtons();
+}
+});
 
     // Initial display update
     updateButtons();
 });
-
-
-
-
-
 
 
 
@@ -182,10 +95,6 @@ function togglePopup() {
         document.body.style.overflow = ""; // Re-enable scrolling on the body
     }
 }
-
-
-
-
 
 
 //service card
@@ -302,7 +211,6 @@ function showLightBox(n) {
     const imageLocation = `/assets/${currentImages[n]}`;
     document.getElementById('lightbox-image').setAttribute('src', imageLocation);
     document.querySelector('.lightbox').style.display = 'block';
-    disableScroll(); // Disable scrollbar
 }
 
 function slideImage(n) {
@@ -314,7 +222,6 @@ document.querySelector('.lightbox-next').addEventListener('click', () => slideIm
 document.querySelector('.lightbox').addEventListener('click', (event) => {
     if (event.target === document.querySelector('.lightbox')) {
         document.querySelector('.lightbox').style.display = 'none';
-        enableScroll(); // Enable scrollbar
     }
 });
 
@@ -326,24 +233,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         updateGallery(getRandomImages()); // Change images every 5 seconds (adjust as needed)
     }, 5000); // Change interval time if needed
 });
-
-// Function to disable the scrollbar
-function disableScroll() {
-    document.body.style.overflow = 'hidden';
-}
-
-// Function to enable the scrollbar
-function enableScroll() {
-    document.body.style.overflow = '';
-
-}
-
-
-
-
-
-
-
 
 //Disable previous dates
 document.addEventListener('DOMContentLoaded', function() {
@@ -422,17 +311,10 @@ document.querySelector(".payment form").addEventListener("submit", function(e) {
 });
 
 
-
-//logout
-function confirmLogout(event) {
-    event.preventDefault(); // Prevent default link behavior
-
-    // Confirm the logout
-    if (confirm("Are you sure you want to logout?")) {
-        // Redirect to log out URL using GET method
-        window.location.href = '/logout';
-    }
+function showSuccessMessage() {
+    alert("Reservation successful! Your table is booked.");
 }
+
 //payment Verify
 function formatExpiryDate(input) {
     // Remove non-numeric characters except "/"
@@ -479,86 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Prevent pasting non-digit characters
         if (e.ctrlKey && e.key === 'v') {
             e.preventDefault();
-        }
-    });
-});
-
-// Show the container and disable background scrolling when the "Profile" link is clicked
-document.querySelector('#profile').addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent default link behavior
-    document.querySelector('.profile-overlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Disable background scrolling
-
-    // Fetch admin details and populate the profile container
-    fetch('/user/getDetails')
-        .then(response => response.json())
-        .then(data => {
-            if (data.firstName) {
-                document.getElementById('firstName').textContent = data.firstName;
-                document.getElementById('lastName').textContent = data.lastName;
-                document.getElementById('userEmail').textContent = data.email;
-                document.getElementById('contactNo').textContent = data.phone;
-            } else {
-                console.error('User details not found');
-            }
-        })
-        .catch(error => console.error('Error fetching user details:', error));
-
-    // Fetch reservations and populate the reservations table
-    fetch('/user/getReservations')
-        .then(response => response.json())
-        .then(data => {
-            const reservationBody = document.getElementById('reservationBody');
-            reservationBody.innerHTML = ''; // Clear existing rows
-
-            data.forEach(reservation => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-              <td>${reservation.date}</td>
-              <td>${reservation.time}</td>
-              <td>${reservation.persons}</td>
-               <td>${reservation.status}</td>
-            <td><button class="profile-cancel" data-id="${reservation.id}">Cancel</button></td>
-            `;
-                reservationBody.appendChild(row);
-            });
-        })
-    // .catch(error => console.error('Error fetching reservations:', error));
-});
-
-// Hide the container and re-enable background scrolling when the close button is clicked
-document.querySelector('.profile-close').addEventListener('click', () => {
-    document.querySelector('.profile-overlay').style.display = 'none';
-    document.body.style.overflow = ''; // Re-enable background scrolling
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const tableContainer = document.querySelector('.table-container');
-
-    // Event delegation: Attach the event listener to the table container
-    tableContainer.addEventListener('click', function(event) {
-        if (event.target.classList.contains('profile-cancel')) {
-            const reservationId = event.target.getAttribute('data-id');
-            console.log("Cancel button clicked for reservation ID: " + reservationId);
-
-            if (confirm('Are you sure you want to cancel this reservation?')) {
-                fetch(`/user/reservations/${reservationId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            event.target.closest('tr').remove();
-                        } else {
-                            alert('Failed to cancel reservation');
-                        }
-                    })
-                    .catch(error => {
-                        alert('Error cancelling reservation');
-                    });
-            }
         }
     });
 });

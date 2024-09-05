@@ -38,7 +38,6 @@ public class RegisterController {
             Random random = new Random();
             user.setUserId(random.nextInt(Integer.MAX_VALUE));
             user.setRole("User");
-            user.setDateToToday(); // Set date to today's date
             // Save the user
             userService.addUser(user);
             return "redirect:/login";

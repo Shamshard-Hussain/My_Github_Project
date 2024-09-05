@@ -20,9 +20,8 @@ body::before {
     position: absolute;
     top: 0;
     left: 0;
-    bottom: 0;
     width: 100%;
-    min-height: 110vh;
+    height: 100%;
     background-image: url('../images/login.jpg');
     background-color: #000; /* Fallback color in case the image fails to load */
     background-position: center;

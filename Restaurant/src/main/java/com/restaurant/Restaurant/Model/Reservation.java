@@ -13,12 +13,12 @@ public class Reservation {
     @Id
     private String id;
     private String date;
-    private String time;
+    private String hours;
     private String name;
     private String phone;
     private int persons;
     private String Status;
-    private int userId;
+    private String userId;
 
 
 }

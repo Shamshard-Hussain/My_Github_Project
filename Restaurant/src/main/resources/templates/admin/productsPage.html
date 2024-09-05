@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link href="../../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet" />
     <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Restaurant</title>
 </head>
 
@@ -15,19 +16,34 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <!-- Logo -->
-    <h1 class="logo">Urban Palate</h1>
+    <h1 class="logo">FoodTime</h1>
     <!-- List of menus -->
     <div class="sidebar-menus">
-        <a href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
-        <a class="active" href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
-        <a href="#"><ion-icon name="notifications-outline"></ion-icon>Notification</a>
-        <a href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
-        <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
-        <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
-        <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+        <a href="adminHome.html" th:href="@{/admin/adminHome}">
+            <ion-icon name="storefront-outline"></ion-icon>
+            Home</a>
+        <a href="#">
+            <ion-icon name="receipt-outline"></ion-icon>
+            Reports</a>
+        <a class="active" href="productsPage.html" th:href="@{/admin/productsPage}">
+            <ion-icon name="pizza-outline"></ion-icon>
+            Products</a>
+        <a href="#">
+            <ion-icon name="notifications-outline"></ion-icon>
+            Notification</a>
+        <a href="orders.html" th:href="@{/admin/orders}">
+            <ion-icon name="table-outline"></ion-icon>
+            Reservation</a>
+        <a href="locations.html" th:href="@{/admin/locations}">
+            <ion-icon name="location-outline"></ion-icon>
+            Locations</a>
+        <a href="Services.html" th:href="@{/admin/Services}">
+            <ion-icon name="construct-outline"></ion-icon>
+            Service</a>
+        <a href="gallery1.html" th:href="@{/admin/gallery1}">
+            <ion-icon name="image-outline"></ion-icon>
+            Gallery</a>
         <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
-        <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
-        <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
     </div>
     <!-- Logout -->
     <div class="sidebar-logout">
@@ -38,8 +54,6 @@
         </form>
     </div>
 </div>
-
-
 
 <div class="main">
     <!-- Main navbar-->
@@ -53,23 +67,9 @@
         </div>
         <!-- Profile icon on left side of navbar-->
         <div class="profile">
-            <a class="user" href="#" onclick="showAdminDetails(event)">
+            <a class="user" href="#">
                 <ion-icon name="person-outline"></ion-icon>
             </a>
-        </div>
-    </div>
-
-    <!-- Admin Details Popup -->
-    <div id="adminDetailsPopup" class="adminPopup hidden">
-        <div class="adminPopup-content">
-            <span class="adminClose" onclick="closePopup()">&times;</span>
-            <h3>Admin Details</h3>
-            <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
-            <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
-            <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
-            <p><strong>Email:</strong> <span id="popupEmail"></span></p>
-            <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
-            <p><strong>Role:</strong> <span id="popupRole"></span></p>
         </div>
     </div>
 
@@ -85,7 +85,6 @@
                 <tr>
                     <th>Image</th>
                     <th>Name</th>
-                    <th>Description</th>
                     <th>Price</th>
                     <th>Category</th>
                     <th>Actions</th>
@@ -95,11 +94,12 @@
                 <tbody>
                 <!-- Thymeleaf loop to populate rows -->
                 <tr th:each="product : ${products}">
-                    <td><img th:src="@{/admin/image/{id}(id=${product.imageId})}" alt="Product Image"> </td>
+                    <td>
+                        <img th:src="@{/admin/image/{id}(id=${product.imageId})}" alt="Product Image">
+                    </td>
                     <td th:text="${product.id}" hidden>Id</td>
                     <td th:text="${product.productName}">Product Name</td>
-                    <td th:text="${product.description}">Product Description</td>
-                    <td  th:text="${product.price}+ '0'">Price</td>
+                    <td th:text="${product.price}">Price</td>
                     <td th:text="${product.category}">Category</td>
                     <td>
                         <form th:action="@{/admin/deleteProduct/{id}(id=${product.id})}" method="post"
@@ -114,10 +114,10 @@
                            th:data-price="${product.price}"
                            th:data-category="${product.category}"
                            th:data-description="${product.description}"
-                            id="UpdateProduct">Edit</a>
+                           onclick="openEditModal(this)" id="UpdateProduct">Edit</a>
 
                     </td>
-
+                    </td>
                 </tr>
                 <tr id="noResultsRow" style="display: none;">
                     <td colspan="4" style="text-align: center;">No results found</td>
@@ -308,7 +308,7 @@
             event.preventDefault(); // Prevent default form submission
 
             // Validate the image input
-            const imageInput = document.getElementById('Image');
+            const imageInput = document.getElementById('productImage');
             if (imageInput.files.length === 0) {
                 alert("Please select an image.");
                 return;
@@ -359,6 +359,9 @@
 <script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
 
 
+<script>
+
+</script>
 
 
 </body>

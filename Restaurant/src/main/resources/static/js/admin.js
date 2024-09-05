@@ -7,6 +7,62 @@ function closeModal() {
     document.getElementById("productModal").style.display = "none";
 }
 
+
+
+
+
+// Add product to table
+// document.getElementById("productForm").addEventListener("submit", function (event) {
+//     // Remove event.preventDefault() to allow form submission
+//     const productName = document.getElementById("productName").value;
+//     const productPrice = document.getElementById("productPrice").value;
+//     const productCategory = document.getElementById("productCategory").value;
+//     const description = document.getElementById("productDescription").value;
+//     const productImage = document.getElementById("productImage").files[0];
+//
+//     // Display the image in the table (for local view only)
+//     const reader = new FileReader();
+//     reader.onload = function (e) {
+//         const productTable = document.getElementById("productTable").getElementsByTagName("tbody")[0];
+//         const newRow = productTable.insertRow();
+//
+//         const cell1 = newRow.insertCell(0);
+//         const img = document.createElement("img");
+//         img.src = e.target.result;
+//         img.alt = productName;
+//         img.style.maxWidth = "100px"; // Bootstrap default size can be adjusted
+//         img.style.borderRadius = "8px";
+//         cell1.appendChild(img);
+//
+//         const cell2 = newRow.insertCell(1);
+//         cell2.textContent = productName;
+//
+//         const cell3 = newRow.insertCell(2);
+//         cell3.textContent = `$${productPrice}`;
+//
+//         const cell4 = newRow.insertCell(3);
+//         cell4.textContent = productCategory;
+//
+//         const cell5 = newRow.insertCell(4);
+//         const editButton = document.createElement("a");
+//         editButton.href = "#";
+//         editButton.className = "btn btn-warning btn-sm";
+//         editButton.textContent = "Edit";
+//         cell5.appendChild(editButton);
+//
+//         const deleteButton = document.createElement("a");
+//         deleteButton.href = "#";
+//         deleteButton.className = "btn btn-danger btn-sm";
+//         deleteButton.textContent = "Delete";
+//         cell5.appendChild(deleteButton);
+//     };
+//     reader.readAsDataURL(productImage);
+//
+//     // Close modal after form submission
+//     closeModal();
+// });
+
+
 // Mobile menu toggle
 const mobile = document.querySelector('.menu-toggle');
 const mobileLink = document.querySelector('.sidebar');
@@ -221,50 +277,6 @@ function handleAccessDenied() {
     alert('Access denied: You do not have permission to view this page.');
     window.history.back(); // Go to the previous page
 }
-
-<!-- Admin Details Popup -->
-function showAdminDetails(event) {
-    event.preventDefault();
-
-    fetch('/admin/getDetails')
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Failed to fetch admin details');
-            }
-        })
-        .then(data => {
-            document.getElementById('popupUserId').textContent = data.userId;
-            document.getElementById('popupFirstName').textContent = data.firstName;
-            document.getElementById('popupLastName').textContent = data.lastName;
-            document.getElementById('popupEmail').textContent = data.email;
-            document.getElementById('popupPhone').textContent = data.phone;
-            document.getElementById('popupRole').textContent = data.role;
-
-            const popup = document.getElementById('adminDetailsPopup');
-            popup.classList.remove('hidden');
-            popup.style.display = 'block';
-
-            // Close the popup if clicking outside of it
-            window.addEventListener('click', function (event) {
-                if (!popup.contains(event.target) && !event.target.closest('.user')) {
-                    closePopup();
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching admin details:', error);
-            alert('Failed to load admin details.');
-        });
-}
-
-function closePopup() {
-    const popup = document.getElementById('adminDetailsPopup');
-    popup.style.display = 'none';
-}
-
-
 
 // function filterTable() {
 //     // Get the search input value and convert it to lowercase

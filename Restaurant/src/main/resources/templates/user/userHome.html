@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Restaurant</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <link href="../../static/css/Styles.css" th:href="@{/css/user.css}" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
@@ -24,7 +23,7 @@
       <a href="#foodMenu">Menu</a>
       <a href="#reservation">Reservation</a>
       <a href="#services">Services</a>
-      <a  id="profile" href="#">Profile</a>
+      <a class="login" href="#">Profile</a>
     </div>
   </div>
 </header>
@@ -125,7 +124,7 @@
 
     <div class="food-items" >
       <!-- item -->
-      <div class="food-item " th:each="product : ${products}">
+      <div class="food-item Chicken" th:each="product : ${products}">
         <div class="food-img">
           <img th:src="@{/admin/image/{id}(id=${product.imageId})}" alt="food image">
         </div>
@@ -141,7 +140,10 @@
             <li><i class="far fa-star"></i></li>
           </ul>
           <p class="category">Categories: <span th:text="${product.category}"></span></p>
-
+          <div class="food-item-buttons">
+            <button class="btn view-btn"><i class="fas fa-eye"></i></button>
+            <button class="btn cart-btn"><i class="fas fa-shopping-cart"></i></button>
+          </div>
         </div>
       </div>
       <!-- end of item -->
@@ -210,14 +212,14 @@
       <h2>Payment Gateway</h2>
       <form id="payment-form">
       <div class="Payment-form">
-        <div class="space Payment-icon-relative">
+        <div class="card space Payment-icon-relative">
           <label class="label">Card holder:</label>
           <input type="text" id="PcardHolderName" class="Payment-input"  name="cardHolderName" placeholder="Card Holder Name"
                  pattern="[A-Za-z ]{2,30}" title="Card holder name should be 2 to 30 characters long and contain only letters and spaces." required>
           <i class="fas fa-user"></i>
         </div>
 
-        <div class="space Payment-icon-relative">
+        <div class="card space Payment-icon-relative">
           <label class="label">Card number:</label>
           <input type="text" id="PcardNumber" class="Payment-input" name="cardNumber" placeholder="xxxx-xxxx-xxxx-xxxx"
                  pattern="\d{4}-\d{4}-\d{4}-\d{4}"
@@ -269,7 +271,7 @@
 
 
 <!-- Contact us form -->
-<div class="contact-icon" id="Contact-Us" onclick="togglePopup()">
+<div class="contact-icon" onclick="togglePopup()">
   <img src="/images/help.png" alt="Contact Us">
 </div>
 
@@ -277,27 +279,17 @@
   <div class="popup-content">
     <span class="close" onclick="togglePopup()">&times;</span>
     <h2>Contact Us</h2>
-    <form action="/user/contact" method="POST">
+    <form>
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required>
       <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
+      <input type="email" id="email" name="email" required>
       <label for="message">Message:</label>
       <textarea id="message" name="message" required></textarea>
       <button type="submit">Send</button>
     </form>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
 
 <!-- gallery -->
 <div class="gallery-container">
@@ -312,72 +304,6 @@
     <div class="lightbox-next">&#10095;</div>
   </div>
 </div>
-
-
-
-
-<section class="team-page-section">
-  <div class="">
-    <!-- Sec Title -->
-    <div class="sec-title centered">
-      <div class="title">Our Team</div>
-    </div>
-
-    <div class="row clearfix">
-      <!-- Team Block -->
-      <div class="team-block col-lg-4 col-md-6 col-sm-12">
-        <div class="inner-box wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
-          <div class="image">
-            <a href="#"><img src="/images/chef1.jpg" alt="" /></a>
-          </div>
-          <div class="lower-content">
-            <h3><a href="#">Chef Alex Ramirez</a></h3>
-            <p>A culinary artist with 15 years of experience, Chef Alex blends traditional
-              techniques with modern flavors, creating exquisite dishes.
-              Passionate about farm-to-table cooking and innovative gastronomy.</p>
-          </div>
-        </div>
-      </div>
-      <!-- Team Block -->
-      <div class="team-block col-lg-4 col-md-6 col-sm-12">
-        <div class="inner-box wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
-          <div class="image">
-            <a href="#"><img src="/images/chef4.jpg" alt="" /></a>
-          </div>
-          <div class="lower-content">
-            <h3><a href="#">Chef Maria Gomez</a></h3>
-            <p>Renowned for her creative fusion cuisine, Chef Maria combines global spices with local ingredients.
-              With over a decade in top kitchens, she brings a unique flair and dedication to every plate.</p>
-          </div>
-        </div>
-      </div>
-      <!-- Team Block -->
-      <div class="team-block col-lg-4 col-md-6 col-sm-12">
-        <div class="inner-box wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
-          <div class="image">
-            <a href="#"><img src="/images/chef3.jpg" alt="" /></a>
-          </div>
-          <div class="lower-content">
-            <h3><a href="#">Chef Daniel Lee</a></h3>
-<!--            <div class="designation">Web Developer</div>-->
-            <p>With a focus on sustainable cooking, Chef Daniel crafts elegant, seasonal menus that celebrate fresh,
-              local produce. His expertise and commitment to culinary excellence make him a standout in the industry.</p>
-          </div>
-        </div>
-      </div>
-      <!-- Team Block -->
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
 
 
 <!-- Location  -->
@@ -395,51 +321,15 @@
         <div class="sub-title" th:text="${location.phone}" ></div>
         <p th:text="${location.address}"></p>
         <p th:text="${location.email}"></p>
-
+        <!-- <a href="#" target="_blank">
+            <button>
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </a> -->
       </div>
     </div>
   </div>
 </di>
-
-
-
-
-<!-- Profile container (initially hidden) -->
-<div class="Profile-body">
-  <div class="profile-overlay">
-    <div class="profile-container">
-      <span class="profile-close">&times;</span>
-      <div class="profile">User Profile</div>
-      <div class="profile-details">First Name: <span id="firstName">N/A</span></div>
-      <div class="profile-details">Last Name: <span id="lastName">N/A</span></div>
-      <div class="profile-details">Email: <span id="userEmail">N/A</span></div>
-      <div class="profile-details">Contact No: <span id="contactNo">N/A</span></div>
-
-      <div class="profile-reservation">Reservation</div>
-      <div class="table-container">
-        <table class="profile-table">
-          <thead>
-          <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>People</th>
-            <th>Status</th>
-            <th>Options</th>
-          </tr>
-          </thead>
-          <tbody id="reservationBody">
-          <!-- Reservation rows will be added here dynamically -->
-          </tbody>
-        </table>
-      </div>
-      <a class="logout-button" onclick="confirmLogout(event)"> Log Out</a> <!-- Log Out button added -->
-    </div>
-
-  </div>
-</div>
-
-
-
 
 
 
@@ -452,7 +342,13 @@
     locally sourced ingredients and time-honored recipes,
     ensuring each meal is a delightful journey for your taste buds.
     Welcome to our culinary haven!</p>
-
+  <!-- <p class="social">
+      <span><i class="fa fa-facebook"></i></span>
+      <span><i class="fa fa-twitter"></i></span>
+      <span><i class="fa fa-instagram"></i></span>
+      <span><i class="fa fa-reddit"></i></span>
+      <span><i class="fa fa-dribbble"></i></span>
+  </p> -->
 </div>
 <!-- footer section ends -->
 
@@ -465,8 +361,8 @@
 
 
 
-
-<script type="text/javascript" th:src="@{/js/user.js}" src="/js/user.js"></script>
+<!--<script src="script.js"></script>-->
+<script type="text/javascript" th:src="@{/js/user.js}" src="/static/css/js/admin.js"></script>
 </body>
 
 </html>

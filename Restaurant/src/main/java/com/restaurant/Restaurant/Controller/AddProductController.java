@@ -37,8 +37,7 @@ public class AddProductController {
                                           @RequestParam("price") double price,
                                           @RequestParam("category") String category,
                                           @RequestParam("description") String description,
-                                          @RequestParam("image") MultipartFile image,
-                                          RedirectAttributes redirectAttributes) {
+                                          @RequestParam("image") MultipartFile image) {
         Map<String, Object> response = new HashMap<>();
         try {
             productService.addProduct(productName, price, category, description, image);
