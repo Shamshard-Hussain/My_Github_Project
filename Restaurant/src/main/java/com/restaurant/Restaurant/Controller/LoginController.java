@@ -46,6 +46,8 @@ public class LoginController {
                     return "redirect:/user/userHome"; // Redirect to user homepage
                 } else if (user.getRole().equals("Admin")) {
                     return "redirect:/admin/adminHome"; // Redirect to admin homepage
+                }else if (user.getRole().equals("Staff")) {
+                    return "redirect:/admin/adminHome"; // Redirect to admin homepage
                 } else {
                     model.addAttribute("error", "Unsupported user role.");
                     return "login"; // Return to login page with error

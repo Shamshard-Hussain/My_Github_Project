@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="../../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet" />
+    <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet"/>
+    <title>Restaurant</title>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo -->
+    <h1 class="logo">Urban Palate</h1>
+    <!-- List of menus -->
+    <div class="sidebar-menus">
+        <a href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+        <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+        <a href="#"><ion-icon name="notifications-outline"></ion-icon>Notification</a>
+        <a href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
+        <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
+        <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
+        <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+        <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+        <a class="active" href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
+        <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+    </div>
+    <!-- Logout -->
+    <div class="sidebar-logout">
+        <form action="/logout" method="get">
+            <a href="#" onclick="confirmLogout(event)"> <ion-icon name="log-out-outline"></ion-icon> Logout</a>
+        </form>
+    </div>
+</div>
+
+<div class="main">
+    <!-- Main navbar-->
+    <div class="main-navbar">
+        <!-- Menu when appear on mobile version -->
+        <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+        <!-- Search bar -->
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Search.....">
+            <button class="search-btn" onclick="filterTable()">Search</button>
+        </div>
+        <!-- Profile icon on left side of navbar-->
+        <div class="profile">
+            <a class="user" href="#" onclick="showAdminDetails(event)">
+                <ion-icon name="person-outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin Details Popup -->
+    <div id="adminDetailsPopup" class="adminPopup hidden">
+        <div class="adminPopup-content">
+            <span class="adminClose" onclick="closePopup()">&times;</span>
+            <h3>Admin Details</h3>
+            <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
+            <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+            <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
+            <p><strong>Email:</strong> <span id="popupEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+            <p><strong>Role:</strong> <span id="popupRole"></span></p>
+        </div>
+    </div>
+
+
+    <!-- Products lists -->
+    <div class="product-list-wrap">
+        <div class="prod-header">
+            <h1>Staff Account</h1>
+            <button class="add-product-btn" onclick="openModal()">Creat New Account</button>
+        </div>
+        <div class="product-listing">
+            <table id="productTable" class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <!-- Thymeleaf loop to populate rows -->
+                <tr>
+                <tr th:each="user : ${user}">
+                    <td th:text="${user.userId}">Id</td>
+                    <td th:text="${user.firstName}">First Name</td>
+                    <td th:text="${user.lastName}">Last Name</td>
+                    <td th:text="${user.email}">Email</td>
+                    <td th:text="${user.phone}">Contact</td>
+                    <td>
+                        <!-- Check if the role is Admin before showing the buttons -->
+                        <th:block th:if="${session.role == 'Admin'}">
+
+                            <a href="#" class="btn btn-warning btn-sm"
+                               th:data-id="${user.userId}"
+                               th:data-fname="${user.firstName}"
+                               th:data-lname="${user.lastName}"
+                               th:data-email="${user.email}"
+                               th:data-phone="${user.phone}"
+                               id="updateUserButton">Edit</a>
+                        </th:block>
+                    </td>
+                </tr>
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="6" style="text-align: center;">No results found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     // Add event listener for all delete buttons
+    //     document.querySelectorAll(".btn-danger").forEach(button => {
+    //         button.addEventListener("click", function (event) {
+    //             event.preventDefault(); // Prevent the default form submission
+    //
+    //             // Get the form associated with this button
+    //             const form = this.closest('form');
+    //             const userId = form.querySelector('input[name="userId"]').value;
+    //
+    //             // Confirm deletion
+    //             if (confirm('Are you sure you want to delete this user?')) {
+    //                 // Create a FormData object
+    //                 const formData = new FormData(form);
+    //
+    //                 // Submit the form via fetch API
+    //                 fetch(form.action, {
+    //                     method: 'POST',
+    //                     body: formData
+    //                 })
+    //                     .then(response => response.json())
+    //                     .then(result => {
+    //                         // Show the message in a modal or alert
+    //                         alert(result.message || 'User deleted successfully.');
+    //
+    //                         // Refresh the page or remove the row from the table
+    //                         location.reload(); // Refresh the page
+    //                     })
+    //                     .catch(error => {
+    //                         console.error('Error:', error);
+    //                         alert('An error occurred while processing your request.');
+    //                     });
+    //             }
+    //         });
+    //     });
+    // });
+</script>
+
+
+
+
+
+
+
+
+<!-- Edit User Modal HTML -->
+<div id="userModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 class="modal-title">Update User</h2>
+        <form id="userForm" action="/admin/updateUser" method="post">
+            <input type="hidden" id="editUserId" name="id">
+
+            <label for="editFirstName">First Name</label>
+            <input type="text" id="editFirstName" name="firstName" class="form-control" pattern="[A-Za-z\s\-]+" title="Please enter a valid first name" required>
+
+            <label for="editLastName">Last Name</label>
+            <input type="text" id="editLastName" name="lastName" class="form-control" pattern="[A-Za-z\s\-]+" title="Please enter a valid last name" required>
+
+            <label for="editEmail">Email</label>
+            <input type="email" id="editEmail" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address" class="form-control" required>
+
+            <label for="editPhone">Contact</label>
+            <input type="text" id="editPhone" name="phone" class="form-control" pattern="\d{10,15}" title="Please enter a valid phone number with 10-15 digits" required>
+
+            <label for="editPassword">Password</label>
+            <input type="password" id="editPassword" name="password" class="form-control" required>
+
+            <label for="editConfirmPassword">Confirm Password</label>
+            <input type="password" id="editConfirmPassword" name="confirmPassword" class="form-control" required>
+
+            <button type="submit" class="btn btn-primary mt-3" id="updateButton">Update User</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const userModal = document.getElementById("userModal");
+        const messageModal = document.getElementById("messageModal");
+        const closeBtn = document.querySelector(".modal .close");
+
+        document.querySelectorAll("#updateUserButton").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                // Get user data from data attributes
+                const userId = this.getAttribute("data-id");
+                const firstName = this.getAttribute("data-fname");
+                const lastName = this.getAttribute("data-lname");
+                const email = this.getAttribute("data-email");
+                const phone = this.getAttribute("data-phone");
+
+                // Populate the form fields with user data
+                document.getElementById("editUserId").value = userId; // Use correct ID here
+                document.getElementById("editFirstName").value = firstName;
+                document.getElementById("editLastName").value = lastName;
+                document.getElementById("editEmail").value = email;
+                document.getElementById("editPhone").value = phone;
+
+                // Show the modal
+                userModal.style.display = "block";
+            });
+        });
+
+        closeBtn.addEventListener("click", function () {
+            userModal.style.display = "none";
+        });
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function (event) {
+            if (event.target === userModal) {
+                userModal.style.display = "none";
+            }
+        };
+
+        const form = document.getElementById("userForm");
+
+        // Validate form on submission
+        form.addEventListener("submit", function (event) {
+            let valid = true;
+            let errorMessage = "";
+
+            // Retrieve form values
+            const firstName = document.getElementById("editFirstName").value.trim();
+            const lastName = document.getElementById("editLastName").value.trim();
+            const email = document.getElementById("editEmail").value.trim();
+            const phone = document.getElementById("editPhone").value.trim();
+            const password = document.getElementById("editPassword").value;
+            const confirmPassword = document.getElementById("editConfirmPassword").value;
+
+            // Validate first name
+            if (!firstName) {
+                valid = false;
+                errorMessage += "First Name is required.\n";
+            }
+
+            // Validate last name
+            if (!lastName) {
+                valid = false;
+                errorMessage += "Last Name is required.\n";
+            }
+
+            // Validate email
+            if (!email || !validateEmail(email)) {
+                valid = false;
+                errorMessage += "Invalid email address.\n";
+            }
+
+            // Validate phone number
+            if (!phone || !validatePhone(phone)) {
+                valid = false;
+                errorMessage += "Invalid phone number.\n";
+            }
+
+            // Validate passwords
+            if (!password || !confirmPassword) {
+                valid = false;
+                errorMessage += "Password and Confirm Password are required.\n";
+            } else if (password !== confirmPassword) {
+                valid = false;
+                errorMessage += "Passwords do not match.\n";
+            }
+
+            // Display error message and prevent form submission if not valid
+            if (!valid) {
+                alert(errorMessage.trim());
+                event.preventDefault();
+                return; // Exit the function if validation fails
+            }
+
+            // If form is valid, proceed with form submission via fetch API
+            event.preventDefault(); // Prevent the default form submission
+
+            // Create FormData object
+            const formData = new FormData(this);
+
+            // Submit the form via fetch API
+            fetch('/admin/updateUser', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(result => {
+                    document.getElementById("modalMessage").textContent = result.message; // Set the message
+                    $(messageModal).modal('show'); // Show the message modal
+
+                    // Reload the page after a short delay
+                    setTimeout(() => {
+                        // Hide both modals and reload the page
+                        $(userModal).modal('hide');
+                        $(messageModal).modal('hide');
+                        location.reload();
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById("modalMessage").textContent = "An error occurred while processing your request."; // Set error message
+                    $(messageModal).modal('show'); // Show the message modal
+
+                    // Hide the user modal and reload the page after a short delay
+
+                    setTimeout(() => {
+                        $(userModal).modal('hide');
+                        $(messageModal).modal('hide');
+                        location.reload();
+                    }, 3500);
+                });
+        });
+
+        // Helper function to validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Helper function to validate phone number format (e.g., 1234567890)
+        function validatePhone(phone) {
+            const re = /^[0-9]{10}$/; // Adjust regex as needed
+            return re.test(String(phone).replace(/[^0-9]/g, '')); // Remove non-numeric characters
+        }
+    });
+
+
+
+
+</script>
+
+<!-- Modal for adding product -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Staff Registration</h2>
+        <form id="productForm" action="/admin/registration" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="UserId" name="id">
+
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" pattern="[A-Za-z\s\-]+" title="Please enter a valid first name" class="form-control" required>
+
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" pattern="[A-Za-z\s\-]+" title="Please enter a valid last name" class="form-control" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address" class="form-control" required>
+
+            <label for="phone">Contact</label>
+            <input type="text" id="phone" name="phone" class="form-control" pattern="\d{10,15}" title="Please enter a valid phone number with 10-15 digits" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+
+            <button type="submit" class="btn btn-primary mt-3" id="submitButton">Register</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal HTML -->
+<div id="messageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notification</h5>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Message goes here...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("productForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form values
+            const firstName = document.getElementById("firstName").value.trim();
+            const lastName = document.getElementById("lastName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const contact = document.getElementById("phone").value.trim();
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Initialize error messages
+            let errorMessage = "";
+
+            // Validate first name
+            if (firstName === "") {
+                errorMessage += "First name is required.<br>";
+            }
+
+            // Validate last name
+            if (lastName === "") {
+                errorMessage += "Last name is required.<br>";
+            }
+
+            // Validate email
+            if (email === "" || !validateEmail(email)) {
+                errorMessage += "A valid email is required.<br>";
+            }
+
+            // Validate contact number
+            if (contact === "" || !validateContact(contact)) {
+                errorMessage += "A valid contact number is required.<br>";
+            }
+
+            // Validate passwords
+            if (password === "") {
+                errorMessage += "Password is required.<br>";
+            }
+
+            if (confirmPassword === "") {
+                errorMessage += "Confirm password is required.<br>";
+            }
+
+            if (password !== confirmPassword) {
+                errorMessage += "Passwords do not match.<br>";
+            }
+
+            // Display errors if any
+            if (errorMessage) {
+                document.getElementById("modalMessage").innerHTML = errorMessage; // Set the error messages
+                $('#messageModal').modal('show'); // Show the modal
+
+            } else {
+                // Create FormData object
+                const formData = new FormData(this);
+
+                // Submit the form via fetch API
+                fetch('/admin/registration', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        document.getElementById("modalMessage").textContent = result.message; // Set the message
+                        $('#messageModal').modal('show'); // Show the modal
+                        if (result.success) {
+                            // Refresh the page after a short delay to allow the user to see the message
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById("modalMessage").textContent = "An error occurred while processing your request."; // Set error message
+                        $('#messageModal').modal('show'); // Show the modal
+                    });
+
+            }
+        });
+
+        // Helper function to validate email format
+        function validateEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        }
+
+        // Helper function to validate contact number format
+        function validateContact(contact) {
+            const contactPattern = /^[0-9]{10}$/; // Adjust the pattern based on your contact number requirements
+            return contactPattern.test(contact);
+        }
+
+        function hideModal() {
+            $('#messageModal').modal('hide');
+        }
+
+        // Add event listener to the OK button
+        document.querySelector('.modal-footer .btn-secondary').addEventListener('click', hideModal);
+    });
+
+</script>
+
+<!-- Delete User Modal HTML -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <h2 class="modal-title">Confirm Deletion</h2>
+        <p id="deleteMessage">Are you sure you want to delete this user?</p>
+        <button id="confirmDeleteButton" class="btn btn-danger">Delete</button>
+        <button onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
+    </div>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+</body>
+
+</html>

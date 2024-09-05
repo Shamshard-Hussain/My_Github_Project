@@ -31,11 +31,6 @@ public class MainController {
         return service.getUserByUserId(userId);
     }
 
-    @GetMapping("/{role}")
-    public String getUserType(@PathVariable String role) {
-        return service.getUserDetailsByRole(role);
-    }
-
 
     @PutMapping
     public User updateUser(@RequestBody User user) {

@@ -24,7 +24,7 @@
       <a href="#foodMenu">Menu</a>
       <a href="#reservation">Reservation</a>
       <a href="#services">Services</a>
-      <a  id="profile" href="#">Profile</a>
+      <a class="login" href="../login.html" th:href="@{/login}">Login</a>
     </div>
   </div>
 </header>
@@ -164,91 +164,37 @@
 
     <div class="Reservation-card-content">
       <h3>Reservation</h3>
-        <form id="reservation-form" class="Reservation-form" action="/user/book" method="POST" onsubmit="return openPopup()">
 
 
-        <div class="Reservation-form-row">
-          <input type="date" id="inputdate" name="date" value="" placeholder="Date" required>
 
-          <input type="time" id="inputtime" name="hours" required placeholder="Time">
-        </div>
+          <div class="Reservation-form-row">
+            <input type="date" id="inputdate" name="date" value="" placeholder="Date" >
 
-        <div class="Reservation-form-row">
-          <input type="text" name="name" placeholder="Full Name"
-                 pattern="[A-Za-z ]{2,50}"
-                 title="Full name should be 2 to 50 characters long and contain only letters and spaces."
-                 required>
+            <input type="time" id="inputtime" name="hours" required placeholder="Time">
+          </div>
 
-          <input type="text" name="phone" placeholder="Phone Number"
-                 pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                 title="Phone number can include country code and should be in a valid format with numbers only."
-                 required>
-        </div>
-        <div class="Reservation-form-row">
-          <input type="number" name="persons" placeholder="How Many Persons?" min="1" required>
-          <input type="submit" value="BOOK TABLE">
-        </div>
-        <!-- Hidden Payment Fields -->
-        <input type="hidden" id="cardHolderName" name="cardHolderName">
-        <input type="hidden" id="cardNumber" name="cardNumber">
-        <input type="hidden" id="expiryDate" name="expiryDate">
-        <input type="hidden" id="cvc" name="cvc">
+          <div class="Reservation-form-row">
+            <input type="text" name="name" placeholder="Full Name"
+                   pattern="[A-Za-z ]{2,50}"
+                   title="Full name should be 2 to 50 characters long and contain only letters and spaces."
+                   >
 
-      </form>
+            <input type="text" name="phone" placeholder="Phone Number"
+                   pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+                   title="Phone number can include country code and should be in a valid format with numbers only."
+                   >
+          </div>
+          <div class="Reservation-form-row">
+            <input type="number" name="persons" placeholder="How Many Persons?" min="1" >
+            <input type="submit" value="Login" onclick="window.location.href='../login'; return false;" >
+          </div>
+
+
+
     </div>
   </div>
 </section>
 
-<!-- Popup -->
-<div id="reservation-popup" class="payment-popup">
-  <div class="payment-popup-content">
-    <span class="payment-close" onclick="closePopup()">&times;</span>
-    <div class="payment">
-<!--      <div class="payment-logo">-->
-<!--        <p>p</p>-->
-<!--      </div>-->
-      <h2>Payment Gateway</h2>
-      <form id="payment-form">
-      <div class="Payment-form">
-        <div class="space Payment-icon-relative">
-          <label class="label">Card holder:</label>
-          <input type="text" id="PcardHolderName" class="Payment-input"  name="cardHolderName" placeholder="Card Holder Name"
-                 pattern="[A-Za-z ]{2,30}" title="Card holder name should be 2 to 30 characters long and contain only letters and spaces." required>
-          <i class="fas fa-user"></i>
-        </div>
-
-        <div class="space Payment-icon-relative">
-          <label class="label">Card number:</label>
-          <input type="text" id="PcardNumber" class="Payment-input" name="cardNumber" placeholder="xxxx-xxxx-xxxx-xxxx"
-                 pattern="\d{4}-\d{4}-\d{4}-\d{4}"
-                 title="Card number should be in the format xxxx-xxxx-xxxx-xxxx (16 digits separated by dashes)."
-                 maxlength="19"
-                 required>
-
-          <i class="far fa-credit-card"></i>
-        </div>
-
-        <div class="card-grp space">
-          <div class="Payment-card-item Payment-icon-relative">
-            <label class="label">Expiry date:</label>
-            <input type="text" id="PexpiryDate" class="Payment-input" name="expiryDate" placeholder="MM/YY"
-                   pattern="(0[1-9]|1[0-2])/\d{2}" title="Expiry date should be in MM/YY format" required maxlength="5" oninput="formatExpiryDate(this)">
-            <i class="far fa-calendar-alt"></i>
-          </div>
-
-          <div class="Payment-card-item Payment-icon-relative">
-            <label class="label">CVC:</label>
-            <input type="text" id="Pcvc" class="Payment-input"  name="cvc" placeholder="xxxx"
-                   pattern="[0-9]{3,4}" title="CVC should be either 3 or 4 digits long." maxlength="4" required>
-            <i class="fas fa-lock"></i>
-          </div>
-        </div>
-        <button type="submit" class="Payment-btn">Pay</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 
 
@@ -327,6 +273,7 @@
       <!-- Team Block -->
       <div class="team-block col-lg-4 col-md-6 col-sm-12">
         <div class="inner-box wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
+
           <div class="image">
             <a href="#"><img src="/images/chef1.jpg" alt="" /></a>
           </div>
@@ -359,7 +306,6 @@
           </div>
           <div class="lower-content">
             <h3><a href="#">Chef Daniel Lee</a></h3>
-<!--            <div class="designation">Web Developer</div>-->
             <p>With a focus on sustainable cooking, Chef Daniel crafts elegant, seasonal menus that celebrate fresh,
               local produce. His expertise and commitment to culinary excellence make him a standout in the industry.</p>
           </div>
@@ -369,15 +315,6 @@
     </div>
   </div>
 </section>
-
-
-
-
-
-
-
-
-
 
 
 <!-- Location  -->
@@ -439,10 +376,6 @@
 </div>
 
 
-
-
-
-
 <!-- footer section starts  -->
 <div class="footer">
   <h4>Urban Palate</h4>
@@ -455,15 +388,6 @@
 
 </div>
 <!-- footer section ends -->
-
-
-
-
-
-
-
-
-
 
 
 <script type="text/javascript" th:src="@{/js/user.js}" src="/js/user.js"></script>
