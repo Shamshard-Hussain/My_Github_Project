@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="../../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet" />
+    <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet" />
+    <title>Restaurant</title>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo -->
+    <h1 class="logo">Urban Palate</h1>
+    <!-- List of menus -->
+    <div class="sidebar-menus">
+        <a href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+        <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+        <a href="#"><ion-icon name="notifications-outline"></ion-icon>Notification</a>
+        <a class="active" href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
+        <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
+        <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
+        <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+        <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+        <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
+        <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+    </div>
+    <!-- Logout -->
+    <div class="sidebar-logout">
+        <form action="/logout" method="get">
+            <a href="#" onclick="confirmLogout(event)"> <ion-icon name="log-out-outline"></ion-icon> Logout</a>
+        </form>
+    </div>
+</div>
+
+<div class="main">
+    <!-- Main navbar-->
+    <div class="main-navbar">
+        <!-- Menu when appear on mobile version -->
+        <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+        <!-- Search bar -->
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Search.....">
+            <button class="search-btn" onclick="filterTable()">Search</button>
+        </div>
+        <!-- Profile icon on left side of navbar-->
+        <div class="profile">
+            <a class="user" href="#" onclick="showAdminDetails(event)">
+                <ion-icon name="person-outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+
+    <!-- Products lists -->
+    <div class="product-list-wrap">
+        <div class="prod-header">
+            <h1>Reservation Listing</h1>
+        </div>
+        <div class="product-listing">
+            <table id="productTable" class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Reservation Id</th>
+                    <th>User Id</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Chairs</th>
+                    <th>Status</th>
+                    <th></th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Loop through the reservations -->
+                <tr th:each="reservation : ${reservations}">
+                    <td th:text="${reservation.id}">Name</td>
+                    <td th:text="${reservation.userId}">Name</td>
+                    <td th:text="${reservation.name}">Name</td>
+                    <td th:text="${reservation.phone}">Contact</td>
+                    <td th:text="${reservation.date}">Date</td>
+                    <td th:text="${reservation.time}">Time</td>
+                    <td th:text="${reservation.persons}">Chairs</td>
+                    <td th:text="${reservation.status}">Status</td>
+                    <td>
+                        <form th:action="@{/admin/updateReservationStatus}" method="post">
+                            <input type="hidden" name="reservationId" th:value="${reservation.id}" />
+                            <input type="hidden" name="userId" th:value="${reservation.userId}" />
+                            <input type="hidden" name="status" value="Approved" />
+                            <button type="submit" class="btn btn-warning btn-sm">Ok</button>
+                        </form>
+                        </td>
+                    <td>
+                        <form th:action="@{/admin/cancelReservationStatus}" method="post">
+                            <input type="hidden" name="reservationId" th:value="${reservation.id}" />
+                            <input type="hidden" name="date" th:value="${reservation.date}"/>
+                            <input type="hidden" name="time" th:value="${reservation.time}"/>
+                            <input type="hidden" name="userId" th:value="${reservation.userId}"/>
+                            <input type="hidden" name="status" value="Canceled" />
+                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                        </form>
+
+                    </td>
+                </tr>
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="4" style="text-align: center;">No results found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Admin Details Popup -->
+<div id="adminDetailsPopup" class="adminPopup hidden">
+    <div class="adminPopup-content">
+        <span class="adminClose" onclick="closePopup()">&times;</span>
+        <h3>Admin Details</h3>
+        <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
+        <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+        <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
+        <p><strong>Email:</strong> <span id="popupEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+        <p><strong>Role:</strong> <span id="popupRole"></span></p>
+    </div>
+</div>
+
+
+<!-- Notification HTML -->
+<div id="messageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notification</h5>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Message goes here...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Access Denied Message -->
+<div th:if="${accessDenied}">
+    <script>
+        handleAccessDenied();
+    </script>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+</body>
+
+</html>

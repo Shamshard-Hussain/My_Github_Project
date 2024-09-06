@@ -5,15 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="../../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
   <!-- Include jQuery and Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
+  <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet" />
   <title>Restaurant</title>
 </head>
 
@@ -22,18 +20,19 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <!-- Logo -->
-  <h1 class="logo">FoodTime</h1>
+  <h1 class="logo">Urban Palate</h1>
   <!-- List of menus -->
   <div class="sidebar-menus">
-    <a href="adminHome" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
-    <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
-    <a href="/admin/productsPage" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+    <a href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+    <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
     <a href="#"><ion-icon name="notifications-outline"></ion-icon>Notification</a>
-    <a href="orders" th:href="@{/admin/orders}"><ion-icon name="table-outline"></ion-icon>Reservation</a>
+    <a href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
     <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
-    <a class="active"  href="Services" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
-    <a  href="gallery1" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+    <a class="active" href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
+    <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
     <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+    <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
+    <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
   </div>
   <!-- Logout -->
   <div class="sidebar-logout">
@@ -55,9 +54,23 @@
     </div>
     <!-- Profile icon on left side of navbar-->
     <div class="profile">
-      <a class="user" href="#">
+      <a class="user" href="#" onclick="showAdminDetails(event)">
         <ion-icon name="person-outline"></ion-icon>
       </a>
+    </div>
+  </div>
+
+  <!-- Admin Details Popup -->
+  <div id="adminDetailsPopup" class="adminPopup hidden">
+    <div class="adminPopup-content">
+      <span class="adminClose" onclick="closePopup()">&times;</span>
+      <h3>Admin Details</h3>
+      <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
+      <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+      <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
+      <p><strong>Email:</strong> <span id="popupEmail"></span></p>
+      <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+      <p><strong>Role:</strong> <span id="popupRole"></span></p>
     </div>
   </div>
 

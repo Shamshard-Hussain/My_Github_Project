@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Document(collection = "User")
 @Data
 @NoArgsConstructor
@@ -22,5 +24,7 @@ public class User {
     private String phone;
     private String Date;
 
-
+    public void setDateToToday() {
+        this.Date = LocalDate.now().toString(); // Using ISO format for simplicity
+    }
 }

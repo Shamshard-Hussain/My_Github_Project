@@ -1,19 +1,10 @@
 package com.restaurant.Restaurant.Controller;
 
-import com.mongodb.client.gridfs.GridFSBucket;
-import com.mongodb.client.gridfs.GridFSDownloadStream;
-import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.restaurant.Restaurant.Model.*;
 import com.restaurant.Restaurant.Service.*;
-import io.micrometer.core.instrument.util.IOUtils;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.*;
@@ -23,11 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -98,7 +85,7 @@ public class userHome {
 
 
     @PostMapping("/book")
-    public String bookTable(@RequestParam String date,
+    public String bookTable(HttpServletRequest request,@RequestParam String date,
                             @RequestParam String hours,
                             @RequestParam String name,
                             @RequestParam String phone,
@@ -107,7 +94,6 @@ public class userHome {
                             @RequestParam String cardNumber,
                             @RequestParam String expiryDate,
                             @RequestParam String cvc,
-                            @RequestParam String userId,
                             Model model) {
 
         // Verify payment details
@@ -118,13 +104,14 @@ public class userHome {
             model.addAttribute("error", "Invalid payment details. Please try again.");
             return "redirect:/user/userHome#reservation"; // Return the user home page template
         }
-
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
         System.out.println("Payment verified successfully.");
 
         // Create a reservation object
         Reservation reservation = new Reservation();
         reservation.setDate(date);
-        reservation.setHours(hours);
+        reservation.setTime(hours);
         reservation.setName(name);
         reservation.setPhone(phone);
         reservation.setPersons(persons);
@@ -141,5 +128,55 @@ public class userHome {
         return "redirect:/user/userHome#reservation"; // Return the user home page template
     }
 
+
+    @PostMapping("/contact")
+    public ResponseEntity<String> saveContactMessage(
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam("message") String message) throws IOException {
+
+        restaurantService.saveContactMessage(name, email, message);
+        return ResponseEntity.ok("Message received, thank you!");
+    }
+
+    @GetMapping("/getDetails")
+    @ResponseBody
+    public ResponseEntity<?> getUserById(HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId != null) {
+            User admin = restaurantService.getUserById(userId);
+            if (admin != null) {
+                return ResponseEntity.ok(admin);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User details not found");
+    }
+
+    @GetMapping("/getReservations")
+    @ResponseBody
+    public ResponseEntity<?> getReservationsByUserId(HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId != null) {
+            List<Reservation> reservations = restaurantService.getReservationsByUserId(userId);
+            if (reservations != null && !reservations.isEmpty()) {
+                return ResponseEntity.ok(reservations);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservations not found");
+    }
+
+    @DeleteMapping("/reservations/{id}")
+    public ResponseEntity<?> deleteReservation(@PathVariable String id) {
+        System.out.println("Received request to delete reservation with ID: " + id);
+        try {
+            restaurantService.deleteReservationById(id);
+            return ResponseEntity.ok("Reservation deleted successfully");
+        } catch (Exception e) {
+            System.out.println("Error deleting reservation: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting reservation");
+        }
+    }
 
 }
