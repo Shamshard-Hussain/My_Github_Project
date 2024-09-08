@@ -16,7 +16,238 @@
 <body>
 
 <header>
-  <a href="#" class="brand">Urban Palate</a>
+  <a href="#" class="brand"><!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Shopping Cart Interface</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+        }
+
+        .container {
+          width: 500px;
+          margin: 20px auto;
+          border: 1px solid #000;
+          padding: 10px;
+        }
+
+        .tabs {
+          display: flex;
+          justify-content: space-around;
+          border-bottom: 1px solid #000;
+        }
+
+        .tabs div {
+          padding: 10px;
+          cursor: pointer;
+        }
+
+        .tabs div.active {
+          font-weight: bold;
+          text-decoration: underline;
+        }
+
+        .section {
+          display: none;
+          margin-top: 10px;
+        }
+
+        .section.active {
+          display: block;
+        }
+
+        .item-list {
+          width: 100%;
+        }
+
+        .item-list th,
+        .item-list td {
+          border: 1px solid #000;
+          padding: 5px;
+          text-align: center;
+        }
+
+        .promo-code,
+        .checkout,
+        .change-password,
+        .log-out {
+          width: 100%;
+          margin-top: 10px;
+          padding: 10px;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        .promo-code {
+          border: 1px solid #000;
+        }
+
+        .checkout {
+          background-color: #00A550;
+          color: #fff;
+          border: 1px solid #000;
+        }
+
+        .change-password {
+          background-color: #00A550;
+          color: #fff;
+        }
+
+        .log-out {
+          background-color: #FF0000;
+          color: #fff;
+        }
+
+        .cancel-btn {
+          background-color: #FF0000;
+          color: #fff;
+          border: none;
+          cursor: pointer;
+        }
+      </style>
+    </head>
+
+    <body>
+    <div class="container">
+      <div class="tabs">
+        <div class="tab" data-target="cart">Cart</div>
+        <div class="tab" data-target="reservations">Reservations</div>
+        <div class="tab" data-target="user-profile">User Profile</div>
+      </div>
+
+      <!-- Cart Section -->
+      <div id="cart" class="section active">
+        <table class="item-list">
+          <thead>
+          <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>QTY</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>
+              <div>Name<br>Description<br>Discount %</div>
+            </td>
+            <td>Rs.200/=</td>
+            <td>2</td>
+            <td>Rs.400/=</td>
+            <td><button class="cancel-btn">X</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div>Name<br>Description<br>Discount %</div>
+            </td>
+            <td>Rs.200/=</td>
+            <td>2</td>
+            <td>Rs.400/=</td>
+            <td><button class="cancel-btn">X</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div>Name<br>Description<br>Discount %</div>
+            </td>
+            <td>Rs.200/=</td>
+            <td>2</td>
+            <td>Rs.400/=</td>
+            <td><button class="cancel-btn">X</button></td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="promo-code">Promotion Code...</div>
+        <div class="checkout">Check out</div>
+      </div>
+
+      <!-- Reservations Section -->
+      <div id="reservations" class="section">
+        <table class="item-list">
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Peoples</th>
+            <th>Options</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>20-08-2024</td>
+            <td>8:00PM</td>
+            <td>2</td>
+            <td><button class="cancel-btn">Cancel</button></td>
+          </tr>
+          <tr>
+            <td>20-08-2024</td>
+            <td>8:00PM</td>
+            <td>2</td>
+            <td><button class="cancel-btn">Cancel</button></td>
+          </tr>
+          <tr>
+            <td>20-08-2024</td>
+            <td>8:00PM</td>
+            <td>2</td>
+            <td><button class="cancel-btn">Cancel</button></td>
+          </tr>
+          <tr>
+            <td>20-08-2024</td>
+            <td>8:00PM</td>
+            <td>2</td>
+            <td><button class="cancel-btn">Cancel</button></td>
+          </tr>
+          <tr>
+            <td>20-08-2024</td>
+            <td>8:00PM</td>
+            <td>2</td>
+            <td><button class="cancel-btn">Cancel</button></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- User Profile Section -->
+      <div id="user-profile" class="section">
+        <div>First Name: name</div>
+        <div>Last Name: name</div>
+        <div>Email: email</div>
+        <div>Contact No: no</div>
+        <div>
+          <div>New Password:</div>
+          <input type="password" value="************">
+        </div>
+        <div>
+          <div>Confirm Password:</div>
+          <input type="password" value="************">
+        </div>
+        <button class="change-password">Change</button>
+        <button class="log-out">Log out</button>
+      </div>
+    </div>
+
+    <script>
+      const tabs = document.querySelectorAll('.tab');
+      const sections = document.querySelectorAll('.section');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          sections.forEach(section => section.classList.remove('active'));
+
+          tab.classList.add('active');
+          document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+        });
+      });
+    </script>
+    </body>
+
+    </html>
+  </a>
   <div class="home-menu-btn"></div>
   <div class="navigation">
     <div class="navigation-items">

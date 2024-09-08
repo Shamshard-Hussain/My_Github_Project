@@ -162,6 +162,35 @@ document.addEventListener("DOMContentLoaded", () => {
     updateButtons();
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const viewButtons = document.querySelectorAll('.view-btn');
+    const modal = document.getElementById('descriptionModal');
+    const closeBtn = document.querySelector('.product-close-btn');
+    const modalProductDescription = document.getElementById('modalProductDescription');
+
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productDescription = this.getAttribute('data-description');
+
+            modalProductDescription.textContent = productDescription;
+            modal.style.display = 'block';
+        });
+    });
+
+    closeBtn.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
+
+
+
 
 
 
@@ -483,83 +512,83 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Show the container and disable background scrolling when the "Profile" link is clicked
-document.querySelector('#profile').addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent default link behavior
-    document.querySelector('.profile-overlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Disable background scrolling
-
-    // Fetch admin details and populate the profile container
-    fetch('/user/getDetails')
-        .then(response => response.json())
-        .then(data => {
-            if (data.firstName) {
-                document.getElementById('firstName').textContent = data.firstName;
-                document.getElementById('lastName').textContent = data.lastName;
-                document.getElementById('userEmail').textContent = data.email;
-                document.getElementById('contactNo').textContent = data.phone;
-            } else {
-                console.error('User details not found');
-            }
-        })
-        .catch(error => console.error('Error fetching user details:', error));
-
-    // Fetch reservations and populate the reservations table
-    fetch('/user/getReservations')
-        .then(response => response.json())
-        .then(data => {
-            const reservationBody = document.getElementById('reservationBody');
-            reservationBody.innerHTML = ''; // Clear existing rows
-
-            data.forEach(reservation => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-              <td>${reservation.date}</td>
-              <td>${reservation.time}</td>
-              <td>${reservation.persons}</td>
-               <td>${reservation.status}</td>
-            <td><button class="profile-cancel" data-id="${reservation.id}">Cancel</button></td>
-            `;
-                reservationBody.appendChild(row);
-            });
-        })
-    // .catch(error => console.error('Error fetching reservations:', error));
-});
-
-// Hide the container and re-enable background scrolling when the close button is clicked
-document.querySelector('.profile-close').addEventListener('click', () => {
-    document.querySelector('.profile-overlay').style.display = 'none';
-    document.body.style.overflow = ''; // Re-enable background scrolling
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const tableContainer = document.querySelector('.table-container');
-
-    // Event delegation: Attach the event listener to the table container
-    tableContainer.addEventListener('click', function(event) {
-        if (event.target.classList.contains('profile-cancel')) {
-            const reservationId = event.target.getAttribute('data-id');
-            console.log("Cancel button clicked for reservation ID: " + reservationId);
-
-            if (confirm('Are you sure you want to cancel this reservation?')) {
-                fetch(`/user/reservations/${reservationId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            event.target.closest('tr').remove();
-                        } else {
-                            alert('Failed to cancel reservation');
-                        }
-                    })
-                    .catch(error => {
-                        alert('Error cancelling reservation');
-                    });
-            }
-        }
-    });
-});
+// // Show the container and disable background scrolling when the "Profile" link is clicked
+// document.querySelector('#profile-button').addEventListener('click', (event) => {
+//     event.preventDefault(); // Prevent default link behavior
+//     document.querySelector('.profile-overlay').style.display = 'flex';
+//     document.body.style.overflow = 'hidden'; // Disable background scrolling
+//
+//     // Fetch admin details and populate the profile container
+//     fetch('/user/getDetails')
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.firstName) {
+//                 document.getElementById('firstName').textContent = data.firstName;
+//                 document.getElementById('lastName').textContent = data.lastName;
+//                 document.getElementById('userEmail').textContent = data.email;
+//                 document.getElementById('contactNo').textContent = data.phone;
+//             } else {
+//                 console.error('User details not found');
+//             }
+//         })
+//         .catch(error => console.error('Error fetching user details:', error));
+//
+//     // Fetch reservations and populate the reservations table
+//     fetch('/user/getReservations')
+//         .then(response => response.json())
+//         .then(data => {
+//             const reservationBody = document.getElementById('reservationBody');
+//             reservationBody.innerHTML = ''; // Clear existing rows
+//
+//             data.forEach(reservation => {
+//                 const row = document.createElement('tr');
+//                 row.innerHTML = `
+//               <td>${reservation.date}</td>
+//               <td>${reservation.time}</td>
+//               <td>${reservation.persons}</td>
+//                <td>${reservation.status}</td>
+//             <td><button class="profile-cancel" data-id="${reservation.id}">Cancel</button></td>
+//             `;
+//                 reservationBody.appendChild(row);
+//             });
+//         })
+//     // .catch(error => console.error('Error fetching reservations:', error));
+// });
+//
+// // Hide the container and re-enable background scrolling when the close button is clicked
+// document.querySelector('.profile-close').addEventListener('click', () => {
+//     document.querySelector('.profile-overlay').style.display = 'none';
+//     document.body.style.overflow = ''; // Re-enable background scrolling
+// });
+//
+// document.addEventListener('DOMContentLoaded', () => {
+//     const tableContainer = document.querySelector('.table-container');
+//
+//     // Event delegation: Attach the event listener to the table container
+//     tableContainer.addEventListener('click', function(event) {
+//         if (event.target.classList.contains('profile-cancel')) {
+//             const reservationId = event.target.getAttribute('data-id');
+//             console.log("Cancel button clicked for reservation ID: " + reservationId);
+//
+//             if (confirm('Are you sure you want to cancel this reservation?')) {
+//                 fetch(`/user/reservations/${reservationId}`, {
+//                     method: 'DELETE',
+//                     headers: {
+//                         'Content-Type': 'application/json'
+//                     }
+//                 })
+//                     .then(response => {
+//                         if (response.ok) {
+//                             event.target.closest('tr').remove();
+//                         } else {
+//                             alert('Failed to cancel reservation');
+//                         }
+//                     })
+//                     .catch(error => {
+//                         alert('Error cancelling reservation');
+//                     });
+//             }
+//         }
+//     });
+// });
 

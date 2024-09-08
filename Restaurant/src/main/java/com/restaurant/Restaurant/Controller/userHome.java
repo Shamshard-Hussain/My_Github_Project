@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -40,6 +41,9 @@ public class userHome {
 
     @Autowired
     private RestaurantService restaurantService;
+
+    @Autowired
+    private CartService cartService;
 
 
     @GetMapping("/userHome")
@@ -127,6 +131,17 @@ public class userHome {
         model.addAttribute("reservation", reservation);
         return "redirect:/user/userHome#reservation"; // Return the user home page template
     }
+    @PostMapping("/isProductInCart")
+    public ResponseEntity<Map<String, Boolean>> isProductInCart(HttpSession session, @RequestParam String productId) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("exists", false));
+        }
+
+        String userIdStr = String.valueOf(userId);
+        boolean isInCart = cartService.isProductInCart(productId, userIdStr);
+        return ResponseEntity.ok(Map.of("exists", isInCart));
+    }
 
 
     @PostMapping("/contact")
@@ -178,5 +193,69 @@ public class userHome {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting reservation");
         }
     }
+
+
+    @PostMapping("/addToCart")
+    public ResponseEntity<?> addToCart(HttpSession session,
+                                       @RequestParam String productId,
+                                       @RequestParam String productName,
+                                       @RequestParam String image,
+                                       @RequestParam double price) {
+        try {
+            Integer userId = (Integer) session.getAttribute("userId");
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"User not logged in\"}");
+            }
+
+            String userIdStr = String.valueOf(userId);
+            boolean isInCart = cartService.isProductInCart(productId, userIdStr);
+            if (isInCart) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"message\": \"Product already in cart\"}");
+            }
+
+            CartItem cartItem = new CartItem();
+            cartItem.setProductId(productId);
+            cartItem.setUserId(userIdStr);
+            cartItem.setProductName(productName);
+            cartItem.setImage(image);
+            cartItem.setPrice(price);
+            cartItem.setQuantity(1); // Set initial quantity to 1
+
+            cartService.addToCart(cartItem);
+            return ResponseEntity.ok("{\"message\": \"Product added to cart\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"An unexpected error occurred. Please try again.\"}");
+        }
+    }
+
+
+    @GetMapping("/cart")
+    public ResponseEntity<List<CartItem>> getCartItems(HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<CartItem> cartItems = cartService.getCartItemsByUserId(String.valueOf(userId));
+        return ResponseEntity.ok(cartItems);
+    }
+    @DeleteMapping("/removeFromCart")
+    public ResponseEntity<String> removeFromCart(HttpSession session, @RequestParam String productId) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+        }
+
+        String userIdStr = String.valueOf(userId);
+        boolean removed = cartService.removeFromCart(productId, userIdStr);
+
+        if (removed) {
+            return ResponseEntity.ok("Product removed from cart");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found in cart");
+        }
+    }
+
 
 }

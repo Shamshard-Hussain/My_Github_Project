@@ -3,7 +3,6 @@
 <head>
   <title>Restaurant</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <link href="../../static/css/Styles.css" th:href="@{/css/user.css}" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -11,12 +10,13 @@
   <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <link href="../../static/css/Styles.css" th:href="@{/css/user.css}" rel="stylesheet"/>
 </head>
 
 <body>
 
 <header>
-  <a href="#" class="brand">Urban Palate</a>
+  <a href="#" class="brand">ABC Restaurant</a>
   <div class="home-menu-btn"></div>
   <div class="navigation">
     <div class="navigation-items">
@@ -24,7 +24,7 @@
       <a href="#foodMenu">Menu</a>
       <a href="#reservation">Reservation</a>
       <a href="#services">Services</a>
-      <a  id="profile" href="#">Profile</a>
+      <a id="profile-button" href="#">Profile</a>
     </div>
   </div>
 </header>
@@ -123,16 +123,16 @@
       <button class="nav-arrow right-arrow">&gt;</button>
     </div>
 
-    <div class="food-items" >
+    <div class="food-items">
       <!-- item -->
-      <div class="food-item " th:each="product : ${products}">
+      <div class="food-item" th:each="product : ${products}">
         <div class="food-img">
           <img th:src="@{/admin/image/{id}(id=${product.imageId})}" alt="food image">
         </div>
         <div class="food-content">
-          <h2 class="food-name" th:text="${product.productName}">Banana Bread With Butter & Milk</h2>
+          <h2 class="food-name" th:text="${product.productName}"></h2>
           <div class="line"></div>
-          <h3 class="food-price" th:text="'Rs ' + ${product.price}+ '0'">Price</h3>
+          <h3 class="food-price" th:text="'Rs ' + ${product.price} + '0'">Price</h3>
           <ul class="rating">
             <li><i class="fas fa-star"></i></li>
             <li><i class="fas fa-star"></i></li>
@@ -141,13 +141,150 @@
             <li><i class="far fa-star"></i></li>
           </ul>
           <p class="category">Categories: <span th:text="${product.category}"></span></p>
+          <div class="food-item-buttons">
+            <button class="btn view-btn" th:data-description="${product.description}">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn cart-btn" th:data-product-id="${product.id}">
+              <i class="fas fa-shopping-cart"></i>
+            </button>
 
+          </div>
         </div>
       </div>
       <!-- end of item -->
     </div>
+
+
+    <!-- Popup Modal for Product Description -->
+    <div id="descriptionModal" class="product-modal">
+      <div class="product-modal-content">
+        <span class="product-close-btn">&times;</span>
+        <p id="modalProductDescription"></p>
+      </div>
+    </div>
+
+
+
   </div>
 </section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cartButtons = document.querySelectorAll('.cart-btn');
+
+    cartButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        const productName = this.closest('.food-item').querySelector('.food-name').textContent;
+        let image = this.closest('.food-item').querySelector('img').src;
+        image = decodeURIComponent(image); // Decode the URL
+        const price = parseFloat(this.closest('.food-item').querySelector('.food-price').textContent.replace('Rs ', '').replace('0', ''));
+
+        // First, check if the product is already in the cart
+        fetch('/user/isProductInCart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            'productId': productId
+          })
+        })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  if (data.exists) {
+                    alert('Product is already in the cart.');
+                  } else {
+                    // If the product is not in the cart, proceed to add it
+                    return fetch('/user/addToCart', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      },
+                      body: new URLSearchParams({
+                        'productId': productId,
+                        'productName': productName,
+                        'image': image,
+                        'price': price
+                      })
+                    });
+                  }
+                })
+                .then(response => {
+                  if (response) {
+                    return response.json(); // Parse the response from addToCart
+                  }
+                })
+                .then(data => {
+                  if (data && data.message) {
+                    alert(data.message); // Show the response message
+                  }
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  alert('An unexpected error occurred. Please try again.');
+                });
+      });
+    });
+  });
+
+
+
+
+</script>
+
+
+
+
+
+
+<!--<script>-->
+<!--  document.addEventListener('DOMContentLoaded', () => {-->
+<!--    // Function to update the cart UI-->
+<!--    const updateCartUI = (cartItems) => {-->
+<!--      // Update the cart icon with the number of items-->
+<!--      const cartCount = document.querySelector('.cart-count');-->
+<!--      cartCount.textContent = cartItems.length;-->
+
+<!--      // Optionally, update the cart UI with cart items if needed-->
+<!--      // For example, update the cart popup-->
+<!--    };-->
+
+<!--    // Function to add item to cart-->
+<!--    const addToCart = (productId) => {-->
+<!--      // Get existing cart from local storage or initialize empty array-->
+<!--      let cart = JSON.parse(localStorage.getItem('cart')) || [];-->
+
+<!--      // Check if item is already in cart-->
+<!--      if (!cart.includes(productId)) {-->
+<!--        cart.push(productId);-->
+<!--        localStorage.setItem('cart', JSON.stringify(cart));-->
+<!--        updateCartUI(cart);-->
+<!--      }-->
+<!--    };-->
+
+<!--    // Add click event listeners to cart buttons-->
+<!--    const cartButtons = document.querySelectorAll('.cart-btn');-->
+<!--    cartButtons.forEach(button => {-->
+<!--      button.addEventListener('click', () => {-->
+<!--        const productId = button.getAttribute('data-product-id');-->
+<!--        addToCart(productId);-->
+<!--      });-->
+<!--    });-->
+
+<!--    // Initialize cart UI on page load-->
+<!--    const cart = JSON.parse(localStorage.getItem('cart')) || [];-->
+<!--    updateCartUI(cart);-->
+<!--  });-->
+
+<!--</script>-->
 
 
 
@@ -267,7 +404,6 @@
 </section>
 
 
-
 <!-- Contact us form -->
 <div class="contact-icon" id="Contact-Us" onclick="togglePopup()">
   <img src="/images/help.png" alt="Contact Us">
@@ -290,15 +426,6 @@
 </div>
 
 
-
-
-
-
-
-
-
-
-
 <!-- gallery -->
 <div class="gallery-container">
   <!-- Gallery items will be injected here by JavaScript -->
@@ -312,8 +439,6 @@
     <div class="lightbox-next">&#10095;</div>
   </div>
 </div>
-
-
 
 
 <section class="team-page-section">
@@ -371,15 +496,6 @@
 </section>
 
 
-
-
-
-
-
-
-
-
-
 <!-- Location  -->
 <di class="location-Body">
   <h1 class="location-h1">Our Locations</h1>
@@ -402,51 +518,10 @@
 </di>
 
 
-
-
-<!-- Profile container (initially hidden) -->
-<div class="Profile-body">
-  <div class="profile-overlay">
-    <div class="profile-container">
-      <span class="profile-close">&times;</span>
-      <div class="profile">User Profile</div>
-      <div class="profile-details">First Name: <span id="firstName">N/A</span></div>
-      <div class="profile-details">Last Name: <span id="lastName">N/A</span></div>
-      <div class="profile-details">Email: <span id="userEmail">N/A</span></div>
-      <div class="profile-details">Contact No: <span id="contactNo">N/A</span></div>
-
-      <div class="profile-reservation">Reservation</div>
-      <div class="table-container">
-        <table class="profile-table">
-          <thead>
-          <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>People</th>
-            <th>Status</th>
-            <th>Options</th>
-          </tr>
-          </thead>
-          <tbody id="reservationBody">
-          <!-- Reservation rows will be added here dynamically -->
-          </tbody>
-        </table>
-      </div>
-      <a class="logout-button" onclick="confirmLogout(event)"> Log Out</a> <!-- Log Out button added -->
-    </div>
-
-  </div>
-</div>
-
-
-
-
-
-
 <!-- footer section starts  -->
 <div class="footer">
-  <h4>Urban Palate</h4>
-  <p>At Urban Palate,
+  <h4>ABC Restaurant</h4>
+  <p>At Abc Restaurant,
     we blend tradition with innovation to offer a unique dining experience.
     Our menu features fresh,
     locally sourced ingredients and time-honored recipes,
@@ -455,6 +530,344 @@
 
 </div>
 <!-- footer section ends -->
+
+
+
+
+
+
+
+<!-- Popup Container -->
+<div id="user-popup" class="user-popup">
+  <div class="user-popup-content">
+    <button class="user-popup-close">&times;</button>
+
+    <div class="user-tabs">
+      <div class="user-tab active" data-target="user-cart">Cart</div>
+      <div class="user-tab" data-target="user-reservations">Reservations</div>
+      <div class="user-tab" data-target="user-profile">User Profile</div>
+    </div>
+
+
+    <!-- Cart Section -->
+    <div id="user-cart" class="user-section active">
+      <div class="cart-items-container">
+        <table class="user-item-list">
+          <thead>
+          <tr>
+            <th>Image</th>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="cart-items-body">
+          <!-- Cart items will be dynamically added here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="user-promo-code">
+        <input type="text" placeholder="Promo Code">
+        <button>Apply</button>
+      </div>
+      <div class="user-totals">
+        <div class="user-totals-item">
+          <span>Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        <div class="user-totals-item">
+          <span>Tax</span>
+          <span id="tax">$0.00</span>
+        </div>
+        <div class="user-totals-item user-grand-total">
+          <span>Grand Total</span>
+          <span id="grand-total">$0.00</span>
+        </div>
+      </div>
+      <button class="user-checkout">Checkout</button>
+    </div>
+
+
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        fetch('/user/cart', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+                .then(response => response.json())
+                .then(cartItems => {
+                  const cartItemsBody = document.getElementById('cart-items-body');
+                  cartItemsBody.innerHTML = ''; // Clear the table body
+
+                  let subtotal = 0;
+
+                  cartItems.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td><img src="${item.image}" alt="${item.productName}" style="width: 50px; height: 50px;"></td>
+                <td>${item.productName}</td>
+                <td> ${item.price.toFixed(2)}</td>
+                <td>${item.quantity}</td>
+                <td> ${itemTotal.toFixed(2)}</td>
+                <td><button class="user-cancel-btn" data-product-id="${item.productId}">Remove</button></td>
+            `;
+                    cartItemsBody.appendChild(row);
+                  });
+
+                  // Assuming a tax rate of 10%
+                  const tax = subtotal * 0.10;
+                  const grandTotal = subtotal + tax;
+
+                  // Update totals in the UI
+                  document.getElementById('subtotal').textContent = `Rs ${subtotal.toFixed(2)}`;
+                  document.getElementById('tax').textContent = `Rs ${tax.toFixed(2)}`;
+                  document.getElementById('grand-total').textContent = `Rs ${grandTotal.toFixed(2)}`;
+
+                  // Add event listeners to the remove buttons
+                  document.querySelectorAll('.user-cancel-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                      const productId = this.getAttribute('data-product-id');
+                      removeFromCart(productId);
+                    });
+                  });
+                })
+                .catch(error => {
+                  console.error('Error fetching cart items:', error);
+                });
+      });
+
+      // Function to remove item from cart
+      function removeFromCart(productId) {
+        fetch(`/user/removeFromCart?productId=${productId}`, {
+          method: 'DELETE'
+        })
+                .then(response => response.text())
+                .then(data => {
+                  alert(data); // Show response message
+                  location.reload(); // Reload the page to update the cart
+                })
+                .catch(error => console.error('Error removing item from cart:', error));
+      }
+
+
+    </script>
+
+    <!-- Reservations Section -->
+    <div id="user-reservations" class="user-section">
+      <div class="reservations-container">
+        <table class="user-reservation-list">
+          <thead>
+          <tr>
+            <th>Reservation ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody id="reservationBody">
+          <!-- Example reservation -->
+          <tr>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td><button class="user-cancel-btn">Cancel</button></td>
+          </tr>
+          <!-- Add more reservations here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- User Profile Section -->
+    <div id="user-profile" class="user-section">
+      <div class="user-profile-info">
+
+        <div class="user-profile-item">
+          <label for="user-name">Name:</label>
+          <span id="user-name">N/A</span>
+        </div>
+        <div class="user-profile-item">
+          <label for="user-email">Email:</label>
+          <span id="user-email">N/A</span>
+        </div>
+        <div class="user-profile-item">
+          <label for="user-phone">Phone:</label>
+          <span id="user-phone">N/A</span>
+        </div>
+
+      </div>
+      <button class="user-log-out" onclick="confirmLogout(event)">Log Out</button>
+    </div>
+  </div>
+</div>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cartButton = document.getElementById('cart-button');
+      const profileButton = document.getElementById('profile-button');
+      const userPopup = document.getElementById('user-popup');
+      const userPopupClose = document.querySelector('.user-popup-close');
+      const userTabs = document.querySelectorAll('.user-tab');
+      const userSections = document.querySelectorAll('.user-section');
+
+      const showPopup = (targetSection) => {
+        userPopup.style.display = 'flex';
+        userTabs.forEach(tab => {
+          tab.classList.remove('active');
+          if (tab.getAttribute('data-target') === targetSection) {
+            tab.classList.add('active');
+          }
+        });
+        userSections.forEach(section => {
+          section.classList.remove('active');
+          if (section.id === targetSection) {
+            section.classList.add('active');
+          }
+        });
+
+        // Load content based on the active tab
+        if (targetSection === 'user-profile') {
+          loadUserProfile();
+        } else if (targetSection === 'user-reservations') {
+          loadUserReservations();
+        }
+      };
+
+      cartButton.addEventListener('click', () => {
+        showPopup('user-cart');
+      });
+
+      profileButton.addEventListener('click', () => {
+        showPopup('user-profile');
+      });
+
+      userPopupClose.addEventListener('click', () => {
+        userPopup.style.display = 'none';
+      });
+
+      // Handle tab switching within the popup
+      userTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const targetSection = e.target.getAttribute('data-target');
+          showPopup(targetSection);
+        });
+      });
+    });
+
+    function loadUserProfile() {
+      fetch('/user/getDetails')
+              .then(response => response.json())
+              .then(data => {
+                document.getElementById('user-name').textContent = `${data.firstName} ${data.lastName}`;
+                document.getElementById('user-email').textContent = data.email;
+                document.getElementById('user-phone').textContent = data.phone;
+              })
+              .catch(error => console.error('Error fetching user details:', error));
+    }
+
+    function loadUserReservations() {
+      fetch('/user/getReservations')
+              .then(response => response.json())
+              .then(data => {
+                const reservationBody = document.getElementById('reservationBody');
+                reservationBody.innerHTML = ''; // Clear existing rows
+
+                data.forEach(reservation => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                    <td>${reservation.id}</td>
+                    <td>${reservation.date}</td>
+                    <td>${reservation.time}</td>
+                    <td>${reservation.status}</td>
+                    <td><button class="user-cancel-btn" data-id="${reservation.id}">Cancel</button></td>
+                `;
+                  reservationBody.appendChild(row);
+                });
+              })
+              .catch(error => console.error('Error fetching reservations:', error));
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const reservationsContainer = document.querySelector('.reservations-container');
+
+      // Event delegation: Attach the event listener to the reservations container
+      reservationsContainer.addEventListener('click', function(event) {
+        if (event.target.classList.contains('user-cancel-btn')) {
+          const reservationId = event.target.closest('tr').querySelector('td').innerText; // Assuming the reservation ID is in the first cell
+          console.log("Cancel button clicked for reservation ID: " + reservationId);
+
+          if (confirm('Are you sure you want to cancel this reservation?')) {
+            fetch(`/user/reservations/${reservationId}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+                    .then(response => {
+                      if (response.ok) {
+                        event.target.closest('tr').remove();
+                        alert('Reservation canceled successfully.');
+                      } else {
+                        alert('Failed to cancel reservation');
+                      }
+                    })
+                    .catch(error => {
+                      alert('Error cancelling reservation');
+                    });
+          }
+        }
+      });
+    });
+
+
+  </script>
+
+
+  <script>
+    function increment() {
+      var input = document.getElementById('numberInput');
+      var currentValue = parseInt(input.value, 10);
+      var max = input.max ? parseInt(input.max, 10) : Infinity;
+
+      if (currentValue < max) {
+        input.value = currentValue + 1;
+      }
+    }
+
+    function decrement() {
+      var input = document.getElementById('numberInput');
+      var currentValue = parseInt(input.value, 10);
+      var min = input.min ? parseInt(input.min, 10) : 1;
+
+      if (currentValue > min) {
+        input.value = currentValue - 1;
+      }
+    }
+  </script>
+
+<div class="cart-icon-container">
+  <button id="cart-button" class="cart-icon">
+    <span class="cart-count">0</span>
+    🛒
+  </button>
+</div>
+
+
+
+
+
 
 
 
