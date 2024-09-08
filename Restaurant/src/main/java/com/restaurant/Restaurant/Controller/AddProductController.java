@@ -2,6 +2,8 @@ package com.restaurant.Restaurant.Controller;
 
 import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +27,27 @@ public class AddProductController {
     private ProductService productService;
 
     @GetMapping("productsPage")
-    public String showProductPage(Model model) {
-        List<Product> products = productService.getAllProducts();
-        model.addAttribute("products", products);
-        return "admin/productsPage";
+    public String showProductPage(HttpServletRequest request,Model model) {
+
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        String userType = (String) session.getAttribute("role");
+
+        // Check if userType is neither Admin nor Staff
+        if (userType == null || (!userType.equals("Admin") && !userType.equals("Staff"))) {
+            model.addAttribute("accessDenied", true);
+            return "redirect:/login"; // Redirect to log in if session is not set
+        }
+
+        if (userId != null) {
+            model.addAttribute("userId", userId);
+            List<Product> products = productService.getAllProducts();
+            model.addAttribute("products", products);
+            return "admin/productsPage";
+        } else {
+            return "redirect:/login"; // Redirect to log in if session is not set
+        }
+
     }
 
     @PostMapping("/addProduct")

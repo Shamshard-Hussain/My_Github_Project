@@ -172,7 +172,7 @@
                  title="Full name should be 2 to 50 characters long and contain only letters and spaces."
                  required>
 
-          <input type="text" name="phone" placeholder="Phone Number"
+          <input type="number" name="phone" placeholder="Phone Number"
                  pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                  title="Phone number can include country code and should be in a valid format with numbers only."
                  required>
@@ -192,14 +192,11 @@
   </div>
 </section>
 
-<!-- Popup -->
+<!-- Reservation Popup -->
 <div id="reservation-popup" class="payment-popup">
   <div class="payment-popup-content">
     <span class="payment-close" onclick="closePopup()">&times;</span>
     <div class="payment">
-<!--      <div class="payment-logo">-->
-<!--        <p>p</p>-->
-<!--      </div>-->
       <h2>Payment Gateway</h2>
       <form id="payment-form">
       <div class="Payment-form">
@@ -269,7 +266,7 @@
   <div class="popup-content">
     <span class="close" onclick="togglePopup()">&times;</span>
     <h2>Contact Us</h2>
-    <form action="/user/contact" method="POST">
+    <form id="contactForm">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required>
       <label for="email">Email:</label>
@@ -439,10 +436,10 @@
         </div>
         <div class="user-totals-item user-grand-total">
           <span>Grand Total</span>
-          <span id="grand-total">$0.00</span>
+          <span id="grand-total">Rs.0.00</span>
         </div>
       </div>
-      <button class="user-checkout">Checkout</button>
+      <button class="user-checkout" id="process-bill">Checkout</button>
     </div>
 
 
@@ -458,19 +455,11 @@
             <th>Date</th>
             <th>Time</th>
             <th>Status</th>
-            <th>Action</th>
           </tr>
           </thead>
           <tbody id="reservationBody">
-          <!-- Example reservation -->
-          <tr>
-            <td>N/A</td>
-            <td>N/A</td>
-            <td>N/A</td>
-            <td>N/A</td>
-            <td><button class="user-cancel-btn">Cancel</button></td>
-          </tr>
-          <!-- Add more reservations here -->
+          <!-- reservation -->
+
           </tbody>
         </table>
       </div>
@@ -509,6 +498,149 @@
   </button>
 </div>
 
+<div class="Cart-payment">
+  <div id="popup" class="cart-payment-popup-overlay">
+    <div class="cart-payment-container">
+      <button id="close-popup" class="cart-payment-close-btn">&times;</button>
+      <h1>Credit Card Payment</h1>
+      <form class="cart-payment-form">
+        <div class="cart-payment-form-group">
+          <label for="card-number">Card Number</label>
+          <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456">
+        </div>
+        <div class="cart-payment-form-group">
+          <label for="card-holder">Card Holder</label>
+          <input type="text" id="card-holder" name="card-holder" placeholder="John Doe">
+        </div>
+        <div class="cart-payment-form-group">
+          <label for="expiry-date">Expiry Date</label>
+          <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
+        </div>
+        <div class="cart-payment-form-group">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" name="cvv" placeholder="123">
+        </div>
+        <div class="cart-payment-form-group">
+          <label for="amount">Amount</label>
+          <input type="text" id="amount" name="amount" readonly>
+        </div>
+        <button type="button" class="cart-payment-checkout">Payout</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function checkout() {
+    // Collect cart items
+    const rows = document.querySelectorAll('#cart-items-body tr');
+    const cartItems = [];
+    let subtotal = 0;
+
+    rows.forEach(row => {
+      const productId = row.querySelector('td#productId').textContent.trim();
+      const productName = row.querySelector('td#productName').textContent.trim();
+      const price = parseFloat(row.querySelector(`td#price-${productId}`).textContent.trim());
+      const quantity = parseInt(row.querySelector('input[type="text"]').value.trim(), 10);
+
+      const total = price * quantity;
+      cartItems.push({
+        productId,
+        productName,
+        price,
+        quantity
+      });
+
+      subtotal += total;
+    });
+
+    // Set the amount in the payment form
+    document.getElementById('amount').value = `Rs ${subtotal.toFixed(2)}`;
+
+    // Collect payment details
+    const paymentForm = document.querySelector('.cart-payment-form');
+    const formData = new FormData(paymentForm);
+    const paymentData = {};
+    formData.forEach((value, key) => {
+      paymentData[key] = value;
+    });
+
+    // Combine cart items and payment details
+    const data = {
+      cartItems,
+      paymentData
+    };
+
+    // Send cart and payment data to the server
+    fetch('/user/checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+            .then(response => response.json())
+            .then(result => {
+              console.log('Server Response:', result); // Log the entire response
+              if (result.success) {
+                alert(result.message);
+                // Close both popups
+                closeUserPopup();
+                closePaymentPopup();
+                // Clear the cart items from the UI
+                clearCart();
+              } else {
+                alert('Failed to process payment. Please try again.');
+              }
+            })
+            .catch(error => console.error('Error during checkout:', error));
+  }
+
+  function clearCart() {
+    // Remove all cart items from the UI
+    const rows = document.querySelectorAll('#cart-items-body tr');
+    rows.forEach(row => {
+      const productId = row.querySelector('td#productId').textContent.trim();
+      removeAllFromCart(productId); // Call removeFromCart for each item
+    });
+
+    updateTotals(); // Update totals to reflect the empty cart
+    updateCartCount(); // Update the cart item count
+  }
+
+  function closePopup() {
+    const paymentPopup = document.getElementById('popup');
+    paymentPopup.style.display = 'none';
+    document.body.classList.remove('no-scroll');
+  }
+
+
+</script>
+
+
+
+
+
+
+
+    <script>
+      function closeUserPopup() {
+        const userPopup = document.getElementById('user-popup');
+        if (userPopup) {
+          userPopup.style.display = 'none';
+        }
+      }
+
+      function closePaymentPopup() {
+        const paymentPopup = document.getElementById('popup');
+        if (paymentPopup) {
+          paymentPopup.style.display = 'none';
+        }
+        document.body.classList.remove('no-scroll');
+      }
+
+    </script>
 
 
 

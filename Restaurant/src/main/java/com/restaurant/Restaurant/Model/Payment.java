@@ -6,21 +6,24 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
+import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
 
-@Document(collection = "ContactMessages")
+@Document(collection = "Payment")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContactMessage {
+public class Payment {
     @Id
-    private int id;
-    private String name;
-    private String email;
-    private String message;
-    private String status;
-    private String Date;
-
+    private String id;
+    private int userId;
+    private String type;
+    private String description;
+    private BigDecimal amount;
+    private LocalTime time;
 
 
 }

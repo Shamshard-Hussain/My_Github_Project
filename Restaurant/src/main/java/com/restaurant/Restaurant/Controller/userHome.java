@@ -2,12 +2,16 @@ package com.restaurant.Restaurant.Controller;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.restaurant.Restaurant.Model.*;
+import com.restaurant.Restaurant.Repository.BillRepository;
 import com.restaurant.Restaurant.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.*;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +19,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -44,7 +50,13 @@ public class userHome {
 
     @Autowired
     private CartService cartService;
+    private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private JavaMailSender emailSender;
+
+    @Autowired
+    private BillRepository billRepository;
 
     @GetMapping("/userHome")
     public String userHome(HttpServletRequest request, Model model) {
@@ -75,6 +87,7 @@ public class userHome {
             return "redirect:/login"; // Redirect to log in if session is not set
         }
     }
+
     @GetMapping("/image")
     public ResponseEntity<InputStreamResource> getImage(@RequestParam String id) throws IOException {
         GridFSFile gridFSFile = gridFsTemplate.findOne(query(where("_id").is(id)));
@@ -89,7 +102,7 @@ public class userHome {
 
 
     @PostMapping("/book")
-    public String bookTable(HttpServletRequest request,@RequestParam String date,
+    public String bookTable(HttpServletRequest request, @RequestParam String date,
                             @RequestParam String hours,
                             @RequestParam String name,
                             @RequestParam String phone,
@@ -112,8 +125,12 @@ public class userHome {
         Integer userId = (Integer) session.getAttribute("userId");
         System.out.println("Payment verified successfully.");
 
+        Random random = new Random();
+        int randomId = random.nextInt(1000000); //  range
+
         // Create a reservation object
         Reservation reservation = new Reservation();
+        reservation.setId(String.valueOf(randomId));
         reservation.setDate(date);
         reservation.setTime(hours);
         reservation.setName(name);
@@ -122,8 +139,18 @@ public class userHome {
         reservation.setStatus("Pending");
         reservation.setUserId(userId);
 
+
+        Payment payment = new Payment();
+        payment.setUserId(userId);
+        payment.setDescription("Reservation Id: " + randomId);
+        payment.setAmount(new BigDecimal("200"));
+        payment.setType("Reservation");
+        payment.setTime(LocalTime.now());
+
+
         // Save the reservation after successful payment verification
         restaurantService.saveReservation(reservation);
+        restaurantService.savePayment(payment);
         System.out.println("Reservation saved successfully: " + reservation);
 
         // Redirect or return a view based on your needs
@@ -131,7 +158,6 @@ public class userHome {
         model.addAttribute("reservation", reservation);
         return "redirect:/user/userHome#reservation"; // Return the user home page template
     }
-
 
 
     @PostMapping("/contact")
@@ -172,15 +198,23 @@ public class userHome {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservations not found");
     }
 
-    @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<?> deleteReservation(@PathVariable String id) {
-        System.out.println("Received request to delete reservation with ID: " + id);
+
+    @PostMapping("/reservations/{id}")
+    public ResponseEntity<?> cancelReservation(@PathVariable String id, @RequestBody Map<String, String> requestBody) {
+        String status = requestBody.get("status");
+
         try {
-            restaurantService.deleteReservationById(id);
-            return ResponseEntity.ok("Reservation deleted successfully");
+            Reservation reservation = mongoTemplate.findById(id, Reservation.class);
+
+            if (reservation != null) {
+                reservation.setStatus(status); // Update status
+                mongoTemplate.save(reservation);
+                return ResponseEntity.ok("Reservation has been canceled.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation with ID " + id + " not found.");
+            }
         } catch (Exception e) {
-            System.out.println("Error deleting reservation: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting reservation");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating reservation status.");
         }
     }
 
@@ -275,9 +309,6 @@ public class userHome {
     }
 
 
-
-
-
     @DeleteMapping("/removeFromCart")
     public ResponseEntity<String> removeFromCart(HttpSession session, @RequestParam String productId) {
         Integer userId = (Integer) session.getAttribute("userId");
@@ -295,5 +326,78 @@ public class userHome {
         }
     }
 
+
+    @DeleteMapping("/removeAllFromCart")
+    public ResponseEntity<String> removeAllFromCart(HttpSession session, @RequestParam String productId) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            System.out.println("User not logged in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+
+        }
+
+        String userIdStr = String.valueOf(userId);
+        boolean removed = cartService.removeFromCart(productId, userIdStr);
+
+        if (removed) {
+            System.out.println( productId+ "cart items removed successfully");
+        } else {
+            System.out.println("No items found in the cart for the user");
+        }
+        return null;
+    }
+
+
+
+    @PostMapping("/checkout")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> checkout(@RequestBody Map<String, Object> request,HttpSession session) {
+        List<Map<String, Object>> cartItems = (List<Map<String, Object>>) request.get("cartItems");
+        Map<String, String> paymentData = (Map<String, String>) request.get("paymentData");
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        String billId = UUID.randomUUID().toString();
+
+        // Example: Process payment (implement as needed)
+        // boolean paymentSuccess = paymentService.processPayment(paymentData);
+
+        // Save each cart item to the database
+        for (Map<String, Object> item : cartItems) {
+            Bill bill = new Bill();
+            bill.setBillId(billId); // Implement this method to generate a unique ID
+            bill.setProductId((String) item.get("productId"));
+            bill.setUserId(userId); // Implement this method to get the current user ID
+            bill.setProductName((String) item.get("productName"));
+
+            // Ensure proper conversion from Object to Double
+            double price = ((Number) item.get("price")).doubleValue(); // Safely convert to double
+            bill.setPrice(price);
+
+            // Ensure proper conversion from Object to Integer
+            int quantity = ((Number) item.get("quantity")).intValue(); // Safely convert to integer
+            bill.setQuantity(quantity);
+
+            billRepository.save(bill); // Implement `billRepository` or service
+        }
+
+        // Return success response
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Payment processed and cart items saved successfully.");
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+
+    private static final Random random = new Random();
+
+    public static int generateUniqueIntId() {
+        long timestamp = System.currentTimeMillis();
+        int randomNumber = random.nextInt(10000); // Adjust range as needed
+        return (int) (timestamp % Integer.MAX_VALUE) + randomNumber;
+    }
 
 }

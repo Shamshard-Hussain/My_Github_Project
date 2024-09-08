@@ -588,7 +588,7 @@ back-menus:hover,
 
 .add-product-btn {
     background-color: var(--secondaryColor);
-    color: var(--blackColor);;
+    color: var(--blackColor);
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;
@@ -719,4 +719,142 @@ table thead th {
 
 .table-hover tbody tr:hover {
     background-color: #f8f9fa;
+}
+/*---Contact Us----*/
+.comments-section {
+
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.comment-box {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #555;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+}
+
+.comment-date {
+    font-size: 0.85em;
+    color: #aaa;
+}
+
+.comment-status {
+    font-size: 0.85em;
+    color: #fff;
+    background-color: #FF6347;
+    padding: 5px 10px;
+    border-radius: 25px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.status-new {
+    color: white;
+    padding: 5px 10px;
+    border-radius: 25px;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.status-new {
+    background-color: #FF6347;
+}
+
+
+.status-replied {
+    background-color: green;
+}
+
+.comment-text {
+    font-size: 1em;
+    line-height: 1.6;
+    color: #333;
+    padding: 10px 0;
+    border-left: 3px solid #ffc107;
+    padding-left: 15px;
+}
+
+.reply-button {
+    align-self: flex-start;
+    background-color: black;
+    color: white;
+    border: 2px solid #ffc107;
+    padding: 8px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reply-button:hover {
+    background-color: #ffc107;
+    color: black;
+    border: 2px solid black;
+}
+
+.reply-form {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0 0 70px;
+}
+
+.reply-form textarea {
+    width: 100%;
+    min-height: 55px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    resize: vertical;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.send-reply {
+    align-self: flex-start;
+    background-color: #28A745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.send-reply:hover {
+    background-color: #218838;
 }

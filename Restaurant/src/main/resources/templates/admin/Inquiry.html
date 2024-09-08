@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <!-- Include jQuery and Bootstrap JS -->
+    <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet"/>
+    <title>Restaurant</title>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Logo -->
+    <h1 class="logo">ABC Restaurant</h1>
+    <!-- List of menus -->
+    <div class="sidebar-menus">
+        <a href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+        <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+        <a class="active" href="Inquiry.html" th:href="@{/admin/Inquiry}"><ion-icon name="notifications-outline"></ion-icon>Inquiry</a>
+        <a href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
+        <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
+        <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
+        <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+        <a   href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+        <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
+        <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+    </div>
+    <!-- Logout -->
+    <div class="sidebar-logout">
+        <form action="/logout" method="get">
+            <a href="#" onclick="confirmLogout(event)">
+                <ion-icon name="log-out-outline"></ion-icon>
+                Logout</a>
+        </form>
+    </div>
+</div>
+
+<div class="main">
+    <!-- Main navbar-->
+    <div class="main-navbar">
+        <!-- Menu when appear on mobile version -->
+        <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+        <!-- Search bar -->
+        <div class="search">
+            <input type="text" id="searchInput" placeholder="Search........">
+            <button class="search-btn" onclick="filterInquiries()">Search</button>
+        </div>
+        <!-- Profile icon on left side of navbar-->
+        <div class="profile">
+            <!-- User Icon -->
+            <a class="user" href="#" onclick="showAdminDetails(event)">
+                <ion-icon name="person-outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+    <!-- Admin Details Popup -->
+    <div id="adminDetailsPopup" class="adminPopup hidden">
+        <div class="adminPopup-content">
+            <span class="adminClose" onclick="closePopup()">&times;</span>
+            <h3>Admin Details</h3>
+            <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
+            <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+            <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
+            <p><strong>Email:</strong> <span id="popupEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+            <p><strong>Role:</strong> <span id="popupRole"></span></p>
+        </div>
+    </div>
+
+    <!-- Gallery lists -->
+    <div class="product-list-wrap">
+        <div class="prod-header">
+            <h1>Inquiries</h1>
+        </div>
+
+
+        <div class="main-menus">
+            <div class="main-detail">
+
+                <div class="comments-section">
+                    <div class="comment-box" th:each="message : ${contactMessages}" th:data-name="${message.name}" th:data-id="${message.id}" th:data-email="${message.email}" th:data-message="${message.message}">
+                        <div class="comment">
+                            <div class="comment-header">
+                                <div class="comment-author">
+                                    <img src="/images/help.png" alt="User Avatar" class="avatar">
+                                    <div>
+                                        <strong th:text="${message.name}">John Doe</strong>
+                                        <span class="comment-date" th:text="${message.date}">August 30, 2024</span>
+                                    </div>
+                                </div>
+                                <div class="comment-status"
+                                     th:classappend="${message.status == 'New'} ? 'status-new bg-red' : 'status-replied bg-green'">
+                                    <span th:text="${message.status}">New</span>
+                                </div>
+                            </div>
+                            <div class="comment-text" th:text="${message.message}">
+                                This is a sample comment. It provides feedback or inquiries about the content.
+                            </div>
+                            <button class="reply-button" onclick="toggleReplyForm(this)">Reply</button>
+                        </div>
+                        <div class="reply-form" style="display: none;">
+                            <textarea id="replyMessage" placeholder="Write your reply..." required></textarea>
+                            <button class="send-reply" onclick="sendReply(this)">Send Reply</button>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function toggleReplyForm(button) {
+                        const replyForm = button.parentElement.nextElementSibling;
+                        replyForm.style.display = replyForm.style.display === 'none' ? 'flex' : 'none';
+                    }
+
+                    function filterInquiries() {
+                        // Get the search input value and convert it to lowercase
+                        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+                        // Get all comment boxes
+                        const commentBoxes = document.querySelectorAll('.comment-box');
+
+                        // Loop through each comment box and hide/show based on the search term
+                        commentBoxes.forEach(commentBox => {
+                            const name = commentBox.getAttribute('data-name').toLowerCase();
+                            const message = commentBox.getAttribute('data-message').toLowerCase();
+
+                            if (name.includes(searchTerm) || message.includes(searchTerm)) {
+                                commentBox.style.display = 'block'; // Show the comment box
+                            } else {
+                                commentBox.style.display = 'none'; // Hide the comment box
+                            }
+                        });
+                    }
+
+                    function sendReply(button) {
+                        // Get the closest comment-box element
+                        const commentBox = button.closest('.comment-box');
+
+                        // Fetch the ID and email from data attributes
+                        const messageId = commentBox.getAttribute('data-id');
+                        const recipientEmail = commentBox.getAttribute('data-email');
+                        const replyMessage = commentBox.querySelector('#replyMessage').value;
+
+                        // Check if the reply message is provided
+                        if (!replyMessage) {
+                            alert('Please enter a reply message.');
+                            return;
+                        }
+
+                        // Send the reply via AJAX
+                        fetch(`/admin/reply/${messageId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ replyMessage, recipientEmail })
+                        })
+                            .then(response => response.json())
+                            .then(result => {
+                                alert(result.message);
+
+                                if (result.message === "Reply sent successfully!") {
+                                    // Update the status in the UI
+                                    const statusElement = commentBox.querySelector('.comment-status span');
+                                    statusElement.textContent = "Replied";
+
+                                    // Change the background color to green for 'Replied'
+                                    const commentStatus = commentBox.querySelector('.comment-status');
+                                    commentStatus.classList.remove('status-new', 'bg-red');
+                                    commentStatus.classList.add('status-replied', 'bg-green');
+
+                                    // Close the reply form
+                                    const replyForm = commentBox.querySelector('.reply-form');
+                                    replyForm.style.display = 'none';
+                                }
+                            })
+                            .catch(error => {
+                                alert('An error occurred while sending the reply. Please try again later.');
+                            });
+                    }
+
+                </script>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</div>
+
+
+
+
+
+
+<!-- Access Denied Message -->
+<div th:if="${accessDenied}">
+    <script>
+        handleAccessDenied();
+    </script>
+</div>
+
+
+
+
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+</body>
+</html>

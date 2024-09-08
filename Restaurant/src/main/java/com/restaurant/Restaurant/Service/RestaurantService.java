@@ -1,17 +1,23 @@
 package com.restaurant.Restaurant.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 
 
 import com.restaurant.Restaurant.Model.*;
+import com.restaurant.Restaurant.Repository.BillRepository;
+import com.restaurant.Restaurant.Repository.ContactMessageRepository;
 import com.restaurant.Restaurant.Repository.ReservationRepository;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -31,6 +37,9 @@ public class RestaurantService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private ContactMessageRepository contactMessageRepository;
+
     public User addUser(User user) {
         Optional<User> existingUserByEmail = repository.findByEmail(user.getEmail());
 
@@ -44,6 +53,8 @@ public class RestaurantService {
         }
     }
 
+    @Autowired
+    private BillRepository billRepository;
     public Optional<User> findUserByEmail(String email) {
         User user = userStore.get(email);
         return repository.findByEmail(email);
@@ -125,25 +136,21 @@ public class RestaurantService {
         return mongoTemplate.findById(userId, User.class);
     }
 
-
-    public List<Reservation> getReservationsByUserId(Integer userId) {
-        return reservationRepository.findByUserId(userId);
-    }
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll(Sort.by(Sort.Direction.DESC, "date"));
     }
     public void saveReservation(Reservation reservation) {
         mongoTemplate.save(reservation);
     }
-    public void deleteReservationById(String reservationId) {
-        System.out.println("Attempting to delete reservation with ID: " + reservationId);
-        if (reservationRepository.existsById(reservationId)) {
-            reservationRepository.deleteById(reservationId);
-            System.out.println("Reservation with ID " + reservationId + " deleted successfully.");
-        } else {
-            System.out.println("Reservation with ID " + reservationId + " does not exist.");
-        }
+
+    public void savePayment(Payment payment) {
+        mongoTemplate.save(payment);
     }
+
+    public List<Reservation> getReservationsByUserId(Integer userId) {
+        return reservationRepository.findByUserId(userId);
+    }
+
 
     public boolean verifyPayment(String cardHolderName, String cardNumber, String expiryDate, String cvc) {
         // Simple regex patterns for basic validation
@@ -160,17 +167,33 @@ public class RestaurantService {
         return isCardHolderNameValid && isCardNumberValid && isExpiryDateValid && isCvcValid;
     }
 
-    public void saveContactMessage(String name, String email, String Message) throws IOException {
-        String uniqueId = UUID.randomUUID().toString();
+
+    public void saveContactMessage(String name, String email, String message) throws IOException {
+        int uniqueId = generateUniqueId();
         ContactMessage msg = new ContactMessage();
-//        msg.setId(uniqueId); // Set the generated ID
+        msg.setId(uniqueId); // Set the generated ID
         msg.setName(name);
         msg.setEmail(email);
-        msg.setMessage(Message);
-
+        msg.setMessage(message);
+        msg.setStatus("New");
+        msg.setDate(LocalDate.now().toString()); // Set date to today's date
         mongoTemplate.save(msg);
     }
 
+    public List<ContactMessage> getAllContactMessages() {
+        return contactMessageRepository.findAll();
+    }
+
+    public void updateContactMessageStatus(int id, String newStatus) {
+        Query query = new Query(Criteria.where("id").is(id));
+        Update update = new Update().set("status", newStatus);
+        mongoTemplate.updateFirst(query, update, ContactMessage.class);
+    }
+
+    private int generateUniqueId() {
+        Integer lastId = mongoTemplate.findOne(new Query().with(Sort.by(Sort.Order.desc("id"))), ContactMessage.class).getId();
+        return (lastId != null ? lastId : 0) + 1;
+    }
     public void updateReservationStatus(String reservationId, String newStatus, Integer userId,String date, String time) throws IOException {
         // Find the existing reservation document
         Reservation reservation = mongoTemplate.findById(reservationId, Reservation.class);
@@ -230,6 +253,22 @@ public class RestaurantService {
         }
     }
 
-
-
+//    public void saveBills(List<CartItem> cartItems) {
+//        for (CartItem item : cartItems) {
+//            Bill bill = new Bill();
+//            bill.setBillId(generateUniqueIntId()); // Implement a method to generate a unique ID
+//            bill.setProductId(item.getProductId());
+//            bill.setProductName(item.getProductName());
+//            bill.setPrice(item.getPrice());
+//            bill.setQuantity(item.getQuantity());
+//            bill.setUserId("currentUserId"); // Replace with actual user ID logic
+//            billRepository.save(bill);
+//        }
+//    }
+    private static final Random random = new Random();
+    public static int generateUniqueIntId() {
+        long timestamp = System.currentTimeMillis();
+        int randomNumber = random.nextInt(1000000); // Adjust range as needed
+        return (int) (timestamp % Integer.MAX_VALUE) + randomNumber;
+    }
 }
