@@ -131,17 +131,7 @@ public class userHome {
         model.addAttribute("reservation", reservation);
         return "redirect:/user/userHome#reservation"; // Return the user home page template
     }
-    @PostMapping("/isProductInCart")
-    public ResponseEntity<Map<String, Boolean>> isProductInCart(HttpSession session, @RequestParam String productId) {
-        Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("exists", false));
-        }
 
-        String userIdStr = String.valueOf(userId);
-        boolean isInCart = cartService.isProductInCart(productId, userIdStr);
-        return ResponseEntity.ok(Map.of("exists", isInCart));
-    }
 
 
     @PostMapping("/contact")
@@ -240,6 +230,54 @@ public class userHome {
         List<CartItem> cartItems = cartService.getCartItemsByUserId(String.valueOf(userId));
         return ResponseEntity.ok(cartItems);
     }
+
+    @PostMapping("/isProductInCart")
+    public ResponseEntity<Map<String, Boolean>> isProductInCart(HttpSession session, @RequestParam String productId) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("exists", false));
+        }
+
+        String userIdStr = String.valueOf(userId);
+        boolean isInCart = cartService.isProductInCart(productId, userIdStr);
+        return ResponseEntity.ok(Map.of("exists", isInCart));
+    }
+
+    @PostMapping("/updateCart")
+    public ResponseEntity<?> updateCart(HttpSession session,
+                                        @RequestParam String productId,
+                                        @RequestParam int quantity) {
+        try {
+            Integer userId = (Integer) session.getAttribute("userId");
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"success\": false, \"message\": \"User not logged in\"}");
+            }
+
+            String userIdStr = String.valueOf(userId);
+            CartItem cartItem = cartService.getCartItem(productId, userIdStr);
+
+            if (cartItem != null) {
+                if (quantity <= 0) {
+                    cartService.removeFromCart(productId, userIdStr); // Remove item if quantity is zero or less
+                } else {
+                    cartItem.setQuantity(quantity);
+                    cartService.updateCartItem(cartItem);
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"success\": false, \"message\": \"Item not found in cart\"}");
+            }
+
+            return ResponseEntity.ok("{\"success\": true, \"message\": \"Cart updated successfully\"}");
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"success\": false, \"message\": \"An unexpected error occurred. Please try again.\"}");
+        }
+    }
+
+
+
+
+
     @DeleteMapping("/removeFromCart")
     public ResponseEntity<String> removeFromCart(HttpSession session, @RequestParam String productId) {
         Integer userId = (Integer) session.getAttribute("userId");

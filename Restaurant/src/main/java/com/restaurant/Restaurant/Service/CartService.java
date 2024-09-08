@@ -38,4 +38,12 @@ public class CartService {
     }
 
 
+    public CartItem getCartItem(String productId, String userId) {
+        return cartRepository.findItemByProductIdAndUserId(productId, userId);
+    }
+
+    public void updateCartItem(CartItem cartItem) {
+        cartRepository.save(cartItem);
+    }
+
 }
