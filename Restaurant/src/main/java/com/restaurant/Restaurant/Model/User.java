@@ -23,8 +23,8 @@ public class User {
     private String email;
     private String phone;
     private String Date;
-
     public void setDateToToday() {
         this.Date = LocalDate.now().toString(); // Using ISO format for simplicity
     }
 }
+

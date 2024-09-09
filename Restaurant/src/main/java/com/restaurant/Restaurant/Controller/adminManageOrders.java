@@ -50,7 +50,7 @@ public class adminManageOrders {
                                             @RequestParam("time") String time,
                                             @RequestParam("status") String status) {
         try {
-            restaurantService.cancelReservationStatus(reservationId, status,userId,date, time);
+            restaurantService.updateReservationStatus(reservationId, status,userId,date, time);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

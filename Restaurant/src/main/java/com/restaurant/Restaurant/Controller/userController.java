@@ -4,7 +4,9 @@ import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.restaurant.Restaurant.Model.HomeImageGallery;
 import com.restaurant.Restaurant.Model.ImageCard;
+import com.restaurant.Restaurant.Model.User;
 import com.restaurant.Restaurant.Service.ImageGalleryService;
+import com.restaurant.Restaurant.Service.RestaurantService;
 import jakarta.annotation.Resource;
 import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ public class userController {
     @Autowired
     private ImageGalleryService imageGalleryService;
 
+    private RestaurantService userService;
+
     @Autowired
     private GridFsTemplate gridFsTemplate;
 
@@ -42,5 +46,6 @@ public class userController {
                 .map(ImageCard::getImageId) // Assuming imageId is the filename or ID
                 .collect(Collectors.toList());
     }
+
 
 }

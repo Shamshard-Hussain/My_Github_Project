@@ -299,12 +299,6 @@ function enableScroll() {
 }
 
 
-
-
-
-
-
-
 //Disable previous dates
 document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('inputdate');
@@ -365,83 +359,8 @@ function closePopup() {
     document.body.style.overflow = ""; // Re-enable scrolling on the body
 }
 
-document.querySelector(".payment form").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    // Transfer payment data to hidden fields in reservation form
-    document.getElementById("cardHolderName").value = document.getElementById("PcardHolderName").value;
-    document.getElementById("cardNumber").value = document.getElementById("PcardNumber").value;
-    document.getElementById("expiryDate").value = document.getElementById("PexpiryDate").value;
-    document.getElementById("cvc").value = document.getElementById("Pcvc").value;
-
-    // Simulate successful payment (replace with actual payment logic)
-    setTimeout(() => {
-        alert("Reservation successful!"); // Display success message as an alert
-        document.getElementById("reservation-form").submit();
-    }, 1000); // Simulate a short delay for payment processing
-});
 
 
-
-//logout
-function confirmLogout(event) {
-    event.preventDefault(); // Prevent default link behavior
-
-    // Confirm the logout
-    if (confirm("Are you sure you want to logout?")) {
-        // Redirect to log out URL using GET method
-        window.location.href = '/logout';
-    }
-}
-//payment Verify
-function formatExpiryDate(input) {
-    // Remove non-numeric characters except "/"
-    input.value = input.value.replace(/[^\d\/]/g, '');
-
-    // Automatically add "/" after the month part (MM)
-    if (input.value.length > 2 && input.value[2] !== '/') {
-        input.value = input.value.slice(0, 2) + '/' + input.value.slice(2);
-    }
-
-    // Ensure the input is no longer than "MM/YY" (5 characters)
-    if (input.value.length > 5) {
-        input.value = input.value.slice(0, 5);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const cardNumberInput = document.getElementById('PcardNumber');
-
-    // Function to format card number with dashes
-    function formatCardNumber(value) {
-        // Remove non-digit characters
-        value = value.replace(/\D/g, '');
-        // Format the value with dashes
-        return value.match(/.{1,4}/g)?.join('-') || '';
-    }
-
-    cardNumberInput.addEventListener('input', function(e) {
-        // Get the current value and format it
-        const formattedValue = formatCardNumber(e.target.value);
-        // Set the formatted value back to the input
-        e.target.value = formattedValue;
-    });
-
-    cardNumberInput.addEventListener('keypress', function(e) {
-        const key = e.key;
-        // Allow only digits and control keys (Backspace, Tab, etc.)
-        if (!/\d/.test(key) && ![8, 9, 37, 39].includes(e.which)) {
-            e.preventDefault();
-        }
-    });
-
-    cardNumberInput.addEventListener('keydown', function(e) {
-        // Prevent pasting non-digit characters
-        if (e.ctrlKey && e.key === 'v') {
-            e.preventDefault();
-        }
-    });
-});
 
 ///---contact-us----///
 document.getElementById('contactForm').addEventListener('submit', async function(event) {

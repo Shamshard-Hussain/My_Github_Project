@@ -2048,7 +2048,7 @@ tr:hover {
     position: relative;
 }
 
-.user-popup-close {
+.user-popup-close,.cart-payment-close-btn {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -2066,7 +2066,7 @@ tr:hover {
     transition: background-color 0.3s;
 }
 
-.user-popup-close:hover {
+.user-popup-close:hover ,.cart-payment-close-btn:hover{
     background-color: #c82333;
 }
 
@@ -2262,13 +2262,13 @@ Cart-payment {
 }
 
 .cart-payment-form-group input:focus {
-    border-color: #007bff;
+    border-color: black;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
     outline: none;
 }
 
 .cart-payment-checkout {
-    background-color: #007bff;
+    background-color: black;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -2279,7 +2279,7 @@ Cart-payment {
 }
 
 .cart-payment-checkout:hover {
-    background-color: #0056b3;
+    background-color: #28a745;
 }
 
 .cart-payment-popup-overlay {
@@ -2318,18 +2318,11 @@ Cart-payment {
     position: relative;
 }
 
-.cart-payment-close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #333;
-}
+
 
 .cart-payment-confirm-btn,
 .cart-payment-cancel-btn {
-    background-color: #007bff;
+    background-color: #28a745;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -2340,17 +2333,7 @@ Cart-payment {
     transition: background-color 0.3s;
 }
 
-.cart-payment-confirm-btn:hover {
-    background-color: #0056b3;
-}
 
-.cart-payment-cancel-btn {
-    background-color: #dc3545;
-}
-
-.cart-payment-cancel-btn:hover {
-    background-color: #c82333;
-}
 
 body.no-scroll {
     overflow: hidden;

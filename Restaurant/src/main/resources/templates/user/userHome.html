@@ -504,21 +504,29 @@
       <button id="close-popup" class="cart-payment-close-btn">&times;</button>
       <h1>Credit Card Payment</h1>
       <form class="cart-payment-form">
-        <div class="cart-payment-form-group">
-          <label for="card-number">Card Number</label>
-          <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456">
-        </div>
+
         <div class="cart-payment-form-group">
           <label for="card-holder">Card Holder</label>
-          <input type="text" id="card-holder" name="card-holder" placeholder="John Doe">
+          <input type="text" id="card-holder" name="card-holder" placeholder="Card Holder Name"
+                 pattern="[A-Za-z ]{2,30}" title="Card holder name should be 2 to 30 characters long and contain only letters and spaces." required>
+        </div>
+        <div class="cart-payment-form-group">
+          <label for="card-number">Card Number</label>
+          <input type="text" id="card-number" name="card-number" placeholder="xxxx-xxxx-xxxx-xxxx"
+                 pattern="\d{4}-\d{4}-\d{4}-\d{4}"
+                 title="Card number should be in the format xxxx-xxxx-xxxx-xxxx (16 digits separated by dashes)."
+                 maxlength="19"
+                 required>
         </div>
         <div class="cart-payment-form-group">
           <label for="expiry-date">Expiry Date</label>
-          <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
+          <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY"
+                 pattern="(0[1-9]|1[0-2])/\d{2}" title="Expiry date should be in MM/YY format" required maxlength="5" oninput="formatExpiryDate(this)">
         </div>
         <div class="cart-payment-form-group">
           <label for="cvv">CVV</label>
-          <input type="text" id="cvv" name="cvv" placeholder="123">
+          <input type="text" id="cvv" name="cvv" placeholder="xxxx"
+                 pattern="[0-9]{3,4}" title="CVC should be either 3 or 4 digits long." maxlength="4" required>
         </div>
         <div class="cart-payment-form-group">
           <label for="amount">Amount</label>
@@ -529,129 +537,6 @@
     </div>
   </div>
 </div>
-
-
-<script>
-  function checkout() {
-    // Collect cart items
-    const rows = document.querySelectorAll('#cart-items-body tr');
-    const cartItems = [];
-    let subtotal = 0;
-
-    rows.forEach(row => {
-      const productId = row.querySelector('td#productId').textContent.trim();
-      const productName = row.querySelector('td#productName').textContent.trim();
-      const price = parseFloat(row.querySelector(`td#price-${productId}`).textContent.trim());
-      const quantity = parseInt(row.querySelector('input[type="text"]').value.trim(), 10);
-
-      const total = price * quantity;
-      cartItems.push({
-        productId,
-        productName,
-        price,
-        quantity
-      });
-
-      subtotal += total;
-    });
-
-    // Set the amount in the payment form
-    document.getElementById('amount').value = `Rs ${subtotal.toFixed(2)}`;
-
-    // Collect payment details
-    const paymentForm = document.querySelector('.cart-payment-form');
-    const formData = new FormData(paymentForm);
-    const paymentData = {};
-    formData.forEach((value, key) => {
-      paymentData[key] = value;
-    });
-
-    // Combine cart items and payment details
-    const data = {
-      cartItems,
-      paymentData
-    };
-
-    // Send cart and payment data to the server
-    fetch('/user/checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-            .then(response => response.json())
-            .then(result => {
-              console.log('Server Response:', result); // Log the entire response
-              if (result.success) {
-                alert(result.message);
-                // Close both popups
-                closeUserPopup();
-                closePaymentPopup();
-                // Clear the cart items from the UI
-                clearCart();
-              } else {
-                alert('Failed to process payment. Please try again.');
-              }
-            })
-            .catch(error => console.error('Error during checkout:', error));
-  }
-
-  function clearCart() {
-    // Remove all cart items from the UI
-    const rows = document.querySelectorAll('#cart-items-body tr');
-    rows.forEach(row => {
-      const productId = row.querySelector('td#productId').textContent.trim();
-      removeAllFromCart(productId); // Call removeFromCart for each item
-    });
-
-    updateTotals(); // Update totals to reflect the empty cart
-    updateCartCount(); // Update the cart item count
-  }
-
-  function closePopup() {
-    const paymentPopup = document.getElementById('popup');
-    paymentPopup.style.display = 'none';
-    document.body.classList.remove('no-scroll');
-  }
-
-
-</script>
-
-
-
-
-
-
-
-    <script>
-      function closeUserPopup() {
-        const userPopup = document.getElementById('user-popup');
-        if (userPopup) {
-          userPopup.style.display = 'none';
-        }
-      }
-
-      function closePaymentPopup() {
-        const paymentPopup = document.getElementById('popup');
-        if (paymentPopup) {
-          paymentPopup.style.display = 'none';
-        }
-        document.body.classList.remove('no-scroll');
-      }
-
-    </script>
-
-
-
-
-
-
-
-
-
-
-
 
 
 

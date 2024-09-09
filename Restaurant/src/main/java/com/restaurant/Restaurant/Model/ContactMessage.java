@@ -20,7 +20,4 @@ public class ContactMessage {
     private String message;
     private String status;
     private String Date;
-
-
-
 }

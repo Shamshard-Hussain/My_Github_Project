@@ -72,15 +72,14 @@
                     <th>Time</th>
                     <th>Chairs</th>
                     <th>Status</th>
-                    <th></th>
                     <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <!-- Loop through the reservations -->
                 <tr th:each="reservation : ${reservations}">
-                    <td th:text="${reservation.id}">Name</td>
-                    <td th:text="${reservation.userId}">Name</td>
+                    <td th:text="${reservation.id}">Id</td>
+                    <td th:text="${reservation.userId}">User Id</td>
                     <td th:text="${reservation.name}">Name</td>
                     <td th:text="${reservation.phone}">Contact</td>
                     <td th:text="${reservation.date}">Date</td>
@@ -88,15 +87,18 @@
                     <td th:text="${reservation.persons}">Chairs</td>
                     <td th:text="${reservation.status}">Status</td>
                     <td>
-                        <form th:action="@{/admin/updateReservationStatus}" method="post">
+                        <!-- Display Approve button if status is not "Approved" -->
+                        <form th:action="@{/admin/updateReservationStatus}" method="post" th:if="${reservation.status} != 'Approved'">
                             <input type="hidden" name="reservationId" th:value="${reservation.id}" />
-                            <input type="hidden" name="userId" th:value="${reservation.userId}" />
+                            <input type="hidden" name="date" th:value="${reservation.date}"/>
+                            <input type="hidden" name="time" th:value="${reservation.time}"/>
+                            <input type="hidden" name="userId" th:value="${reservation.userId}"/>
                             <input type="hidden" name="status" value="Approved" />
-                            <button type="submit" class="btn btn-warning btn-sm">Ok</button>
+                            <button type="submit" class="btn btn-warning btn-sm">Approve</button>
                         </form>
-                        </td>
-                    <td>
-                        <form th:action="@{/admin/cancelReservationStatus}" method="post">
+
+                        <!-- Display Cancel button if status is "Approved" -->
+                        <form th:action="@{/admin/cancelReservationStatus}" method="post" th:if="${reservation.status} == 'Approved'">
                             <input type="hidden" name="reservationId" th:value="${reservation.id}" />
                             <input type="hidden" name="date" th:value="${reservation.date}"/>
                             <input type="hidden" name="time" th:value="${reservation.time}"/>
@@ -104,7 +106,6 @@
                             <input type="hidden" name="status" value="Canceled" />
                             <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                         </form>
-
                     </td>
                 </tr>
                 <tr id="noResultsRow" style="display: none;">
@@ -112,6 +113,7 @@
                 </tr>
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>

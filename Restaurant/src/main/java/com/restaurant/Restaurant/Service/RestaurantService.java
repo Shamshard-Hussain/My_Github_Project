@@ -65,7 +65,9 @@ public class RestaurantService {
     private final Map<String, User> userStore = new HashMap<>();
 
 
-
+    public User findById(String userId) {
+        return repository.findById(userId).orElse(null);
+    }
 
     public List<User> findAllUsers() {
         return repository.findAll();
@@ -241,7 +243,7 @@ public class RestaurantService {
         }
     }
 
-    private void sendEmailWithCode(String email, String subject, String message) {
+    public void sendEmailWithCode(String email, String subject, String message) {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(email);
@@ -253,22 +255,11 @@ public class RestaurantService {
         }
     }
 
-//    public void saveBills(List<CartItem> cartItems) {
-//        for (CartItem item : cartItems) {
-//            Bill bill = new Bill();
-//            bill.setBillId(generateUniqueIntId()); // Implement a method to generate a unique ID
-//            bill.setProductId(item.getProductId());
-//            bill.setProductName(item.getProductName());
-//            bill.setPrice(item.getPrice());
-//            bill.setQuantity(item.getQuantity());
-//            bill.setUserId("currentUserId"); // Replace with actual user ID logic
-//            billRepository.save(bill);
-//        }
-//    }
-    private static final Random random = new Random();
-    public static int generateUniqueIntId() {
-        long timestamp = System.currentTimeMillis();
-        int randomNumber = random.nextInt(1000000); // Adjust range as needed
-        return (int) (timestamp % Integer.MAX_VALUE) + randomNumber;
+
+
+    public List<Bill> getBillsByPaymentId(String paymentId) {
+        return billRepository.findByBillId(paymentId);
     }
+
+
 }

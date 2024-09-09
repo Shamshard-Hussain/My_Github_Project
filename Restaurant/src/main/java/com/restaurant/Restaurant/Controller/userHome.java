@@ -3,6 +3,7 @@ package com.restaurant.Restaurant.Controller;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.restaurant.Restaurant.Model.*;
 import com.restaurant.Restaurant.Repository.BillRepository;
+import com.restaurant.Restaurant.Repository.UserRepository;
 import com.restaurant.Restaurant.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -53,7 +54,7 @@ public class userHome {
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private JavaMailSender emailSender;
+    private UserRepository userRepository;
 
     @Autowired
     private BillRepository billRepository;
@@ -65,19 +66,14 @@ public class userHome {
 
         if (userId != null) {
             model.addAttribute("userId", userId);
-
             List<HomeImageGallery> gallery = imageGalleryService.getAllImage();
             model.addAttribute("gallery", gallery);
-
             List<Product> products = productService.getAllProducts();
             model.addAttribute("products", products);
-
             List<Locations> locationsList = locationService.getAllLocations();
             model.addAttribute("locations", locationsList);
-
             List<ServicesClass> services = service.getAllImage();
             model.addAttribute("services", services);
-
             List<ImageCard> imageCards = imageGalleryService.getAllImageCards();
             // Add the imageCards list to the model, so it can be accessed in the view
             model.addAttribute("imageCards", imageCards);
@@ -143,9 +139,10 @@ public class userHome {
         Payment payment = new Payment();
         payment.setUserId(userId);
         payment.setDescription("Reservation Id: " + randomId);
-        payment.setAmount(new BigDecimal("200"));
+        payment.setAmount(new BigDecimal("200.0"));
         payment.setType("Reservation");
-        payment.setTime(LocalTime.now());
+        payment.setDate(LocalDate.now());
+        payment.setStatus("Confirmed");
 
 
         // Save the reservation after successful payment verification
@@ -351,34 +348,67 @@ public class userHome {
 
     @PostMapping("/checkout")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> checkout(@RequestBody Map<String, Object> request,HttpSession session) {
+    public ResponseEntity<Map<String, Object>> checkout(@RequestBody Map<String, Object> request, HttpSession session) {
         List<Map<String, Object>> cartItems = (List<Map<String, Object>>) request.get("cartItems");
-        Map<String, String> paymentData = (Map<String, String>) request.get("paymentData");
+
 
         Integer userId = (Integer) session.getAttribute("userId");
-        String billId = UUID.randomUUID().toString();
-
-        // Example: Process payment (implement as needed)
-        // boolean paymentSuccess = paymentService.processPayment(paymentData);
+        String billId = UUID.randomUUID().toString(); // Generate a unique bill ID
+        double totalAmount = 0.0;
 
         // Save each cart item to the database
+        StringBuilder orderDetails = new StringBuilder();
+        orderDetails.append("Order Details:\n\n");
+
         for (Map<String, Object> item : cartItems) {
             Bill bill = new Bill();
-            bill.setBillId(billId); // Implement this method to generate a unique ID
+            bill.setBillId(billId); // Set the same billId for each item
             bill.setProductId((String) item.get("productId"));
-            bill.setUserId(userId); // Implement this method to get the current user ID
+            bill.setUserId(userId);
             bill.setProductName((String) item.get("productName"));
+            bill.setStatus("Pending");
 
-            // Ensure proper conversion from Object to Double
-            double price = ((Number) item.get("price")).doubleValue(); // Safely convert to double
+            double price = ((Number) item.get("price")).doubleValue();
             bill.setPrice(price);
 
-            // Ensure proper conversion from Object to Integer
-            int quantity = ((Number) item.get("quantity")).intValue(); // Safely convert to integer
+            int quantity = ((Number) item.get("quantity")).intValue();
             bill.setQuantity(quantity);
 
-            billRepository.save(bill); // Implement `billRepository` or service
+            totalAmount += price * quantity;
+
+            billRepository.save(bill);
+
+            // Append item details to the email body
+            orderDetails.append(String.format("Product: %s\nQuantity: %d\nPrice: %.2f\n\n",
+                    bill.getProductName(), quantity, price));
         }
+
+        // Append total amount to the email body
+        orderDetails.append(String.format("Total Amount: %.2f", totalAmount));
+
+        // Retrieve user email from the database
+        User user = userRepository.findByUserId(userId);
+        if (user == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "User not found.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        // Send confirmation email
+        String userEmail = user.getEmail();
+        String emailSubject = "Order Confirmation";
+        restaurantService.sendEmailWithCode(userEmail, emailSubject, orderDetails.toString());
+
+        // Create payment record with the same billId
+        Payment payment = new Payment();
+        payment.setUserId(userId);
+        payment.setDescription(billId); // Use the same billId
+        payment.setAmount(BigDecimal.valueOf(totalAmount));
+        payment.setType("Food-Order");
+        payment.setDate(LocalDate.now());
+        payment.setStatus("New");
+        restaurantService.savePayment(payment);
 
         // Return success response
         Map<String, Object> response = new HashMap<>();
@@ -388,16 +418,6 @@ public class userHome {
         return ResponseEntity.ok(response);
     }
 
-
-
-
-
-    private static final Random random = new Random();
-
-    public static int generateUniqueIntId() {
-        long timestamp = System.currentTimeMillis();
-        int randomNumber = random.nextInt(10000); // Adjust range as needed
-        return (int) (timestamp % Integer.MAX_VALUE) + randomNumber;
-    }
-
 }
+
+

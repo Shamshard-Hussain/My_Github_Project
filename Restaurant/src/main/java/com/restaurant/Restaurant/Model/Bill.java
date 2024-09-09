@@ -16,4 +16,5 @@ public class Bill {
     private String productName;
     private double price;
     private int quantity;
+    private String status;
 }
