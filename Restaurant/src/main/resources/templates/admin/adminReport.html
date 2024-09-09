@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <link href="../../static/css/Styles.css" th:href="@{/css/Styles.css}" rel="stylesheet" />
+  <title>Orders</title>
+</head>
+
+<body>
+
+<!--sidebar -->
+<div class="sidebar">
+  <!-- Logo -->
+  <h1 class="logo">ABC Restaurant</h1>
+  <!-- List of menus -->
+  <div class="sidebar-menus">
+    <a  href="adminHome.html" th:href="@{/admin/adminHome}"><ion-icon name="storefront-outline"></ion-icon>Home</a>
+    <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
+    <a href="Inquiry.html" th:href="@{/admin/Inquiry}"><ion-icon name="notifications-outline"></ion-icon>Inquiry</a>
+    <a href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
+    <a href="orders.html" th:href="@{/admin/orders}"><ion-icon name="cart-outline"></ion-icon>Orders</a>
+    <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
+    <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
+    <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
+    <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
+    <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
+    <a class="active" href="adminReport.html"  th:href="@{/admin/adminReport}"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+  </div>
+
+  <!-- Logout -->
+  <div class="sidebar-logout">
+    <form action="/logout" method="get">
+      <a href="#" onclick="confirmLogout(event)"> <ion-icon name="log-out-outline"></ion-icon> Logout</a>
+    </form>
+  </div>
+</div>
+
+<!-- main-->
+<div class="main">
+  <!-- main navbar-->
+  <div class="main-navbar">
+    <!-- menu when appear on mobile version -->
+    <ion-icon class="menu-toggle" name="menu-outline"></ion-icon>
+
+
+
+  </div>
+
+
+  <!-- Admin Details Popup -->
+  <div id="adminDetailsPopup" class="adminPopup hidden">
+    <div class="adminPopup-content">
+      <span class="adminClose" onclick="closePopup()">&times;</span>
+      <h3>Admin Details</h3>
+      <p><strong>User ID:</strong> <span id="popupUserId"></span></p>
+      <p><strong>First Name:</strong> <span id="popupFirstName"></span></p>
+      <p><strong>Last Name:</strong> <span id="popupLastName"></span></p>
+      <p><strong>Email:</strong> <span id="popupEmail"></span></p>
+      <p><strong>Phone:</strong> <span id="popupPhone"></span></p>
+      <p><strong>Role:</strong> <span id="popupRole"></span></p>
+    </div>
+  </div>
+
+  <div class="reportbody">
+    <div class="report-filter-container">
+      <h2>Filter Data</h2>
+      <form id="report-filterForm">
+        <div class="report-form-group">
+          <label for="report-filterCategory">Select Category:</label>
+          <select id="report-filterCategory">
+            <option value="payments">Payments</option>
+            <option value="reservations">Reservations</option>
+            <option value="products">Products</option>
+          </select>
+        </div>
+
+        <!-- Filter Fields -->
+        <div id="report-filterFields" class="report-form-group">
+          <!-- Dynamic fields will be inserted here -->
+        </div>
+
+        <button type="submit" id="generateReportButton" class="report-filter-btn">Generate Report</button>
+      </form>
+    </div>
+
+    <div class="report-grid-container" id="paymentGridContainer">
+      <!-- Cards will be dynamically inserted here -->
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const reportFilterCategory = document.getElementById('report-filterCategory');
+      const reportFilterFields = document.getElementById('report-filterFields');
+      const reportGridContainer = document.getElementById('paymentGridContainer');
+      const generateReportButton = document.getElementById('generateReportButton');
+
+      // Mock data for grid view example
+      const mockData = [
+        { title: "Reservations", description: "Details of Reservations Payment", type: "Reservation" },
+        { title: "Orders", description: "Details of Orders Payment", type: "Food-Order" },
+        { title: "Other", description: "Details of Other Payment", type: "Other" }
+      ];
+
+      // Function to populate the grid with mock data
+      function populateGridWithMockData() {
+        reportGridContainer.innerHTML = '';
+        mockData.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'report-card';
+          card.innerHTML = `
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <button class="report-card-btn" data-type="${item.type}">View Details</button>
+        `;
+          reportGridContainer.appendChild(card);
+        });
+        reportGridContainer.style.display = 'grid';
+      }
+
+      // Handle category change to show appropriate filter fields
+      reportFilterCategory.addEventListener('change', function() {
+        const category = reportFilterCategory.value;
+        reportFilterFields.innerHTML = '';
+
+        if (category === 'payments') {
+          reportFilterFields.innerHTML = `
+          <label for="report-paymentDateFrom">From Date:</label>
+          <input type="date" id="report-paymentDateFrom" required>
+          <label for="report-paymentDateTo">To Date:</label>
+          <input type="date" id="report-paymentDateTo" required>
+        `;
+          reportGridContainer.style.display = 'none';
+
+        } else if (category === 'reservations') {
+          reportFilterFields.innerHTML = `
+          <label for="report-reservationDateFrom">From Date:</label>
+          <input type="date" id="report-reservationDateFrom" required>
+          <label for="report-reservationDateTo">To Date:</label>
+          <input type="date" id="report-reservationDateTo" required>
+        `;
+          reportGridContainer.style.display = 'none';
+
+        } else if (category === 'products') {
+          reportFilterFields.innerHTML = `
+          <label for="report-productCategory">Category:</label>
+          <select id="report-productCategory">
+            <option value="All">All</option>
+            <option value="Appetizers">Appetizers</option>
+            <option value="Entrees">Entrees</option>
+            <!-- Add more categories as needed -->
+          </select>
+        `;
+          reportGridContainer.style.display = 'none';
+
+        } else {
+          reportGridContainer.style.display = 'none';
+        }
+      });
+
+      // Handle report generation
+      generateReportButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        const category = reportFilterCategory.value;
+        const filters = {};
+
+        if (category === 'payments') {
+          filters.dateFrom = document.getElementById('report-paymentDateFrom').value;
+          filters.dateTo = document.getElementById('report-paymentDateTo').value;
+
+          if (!filters.dateFrom || !filters.dateTo) {
+            alert('Please select both date ranges.');
+            return;
+          }
+
+
+          fetch('/admin/filterPayments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(filters),
+          })
+                  .then(response => response.json().then(data => ({ status: response.status, data })))
+                  .then(({ status, data }) => {
+                    if (status === 200) {
+                      if (data.length === 0) {
+                        alert('No data available for the selected filters.');
+                        reportGridContainer.style.display = 'none';
+                      } else {
+                        populateGridWithMockData();  // Only display mock data if records exist
+                        reportGridContainer.style.display = 'grid';
+                      }
+                    } else {
+                      alert('Error: ' + data);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching data.');
+                  });
+
+        } else if (category === 'reservations') {
+          filters.dateFrom = document.getElementById('report-reservationDateFrom').value;
+          filters.dateTo = document.getElementById('report-reservationDateTo').value;
+
+          if (!filters.dateFrom || !filters.dateTo) {
+            alert('Please select both date ranges.');
+            return;
+          }
+
+          downloadExcel(filters, 'reservations');
+
+        } else if (category === 'products') {
+          filters.category = document.getElementById('report-productCategory').value;
+
+          fetch('/admin/filterProducts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(filters),
+          })
+                  .then(response => response.json().then(data => ({ status: response.status, data })))
+                  .then(({ status, data }) => {
+                    if (status === 200) {
+                      if (data.length === 0) {
+                        alert('No data available for the selected filters.');
+                      } else {
+                        downloadExcel(filters, 'products');
+                      }
+                    } else {
+                      alert('Error: ' + data);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching data.');
+                  });
+        }
+      });
+
+      // Function to download Excel
+      function downloadExcel(filters, category) {
+        const endpoint = category === 'reservations' ? '/admin/downloadReservationsExcel' :
+                category === 'products' ? '/admin/downloadProductsExcel' :
+                        '/admin/downloadPaymentsExcel';
+
+        console.log('Downloading Excel with filters:', filters);
+
+        fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(filters),
+        })
+                .then(response => {
+                  if (response.status === 204) {
+                    alert('No data available for download.');
+                    return;
+                  }
+                  return response.blob();
+                })
+                .then(blob => {
+                  if (blob) {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `${category}.xlsx`);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.parentNode.removeChild(link);
+                  }
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred while downloading the file.');
+                });
+      }
+
+
+      // Handle view details button click to download Excel
+      reportGridContainer.addEventListener('click', function(event) {
+        if (event.target.classList.contains('report-card-btn')) {
+          const type = event.target.getAttribute('data-type');
+          const dateFrom = document.getElementById('report-paymentDateFrom')?.value;
+          const dateTo = document.getElementById('report-paymentDateTo')?.value;
+
+          // Check if date range inputs are available
+          if (!dateFrom || !dateTo) {
+            alert('Please select date ranges.');
+            return;
+          }
+
+          const filters = { type, dateFrom, dateTo };
+
+          fetch('/admin/downloadPaymentsExcel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(filters),
+          })
+                  .then(response => {
+                    if (response.status === 204) {
+                      alert('No data available for download.');
+                      return;
+                    }
+                    return response.blob();
+                  })
+                  .then(blob => {
+                    if (blob) {
+                      const url = window.URL.createObjectURL(new Blob([blob]));
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.setAttribute('download', `${type}.xlsx`);
+                      document.body.appendChild(link);
+                      link.click();
+                      link.parentNode.removeChild(link);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while downloading the file.');
+                  });
+        }
+      });
+
+      // Trigger change event to show the initial filter fields
+      reportFilterCategory.dispatchEvent(new Event('change'));
+    });
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<!-- Access Denied Message -->
+<div th:if="${accessDenied}">
+  <script>
+    handleAccessDenied();
+  </script>
+</div>
+
+
+</body>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script type="text/javascript" th:src="@{/js/admin.js}" src="/static/css/js/admin.js"></script>
+
+
+</html>

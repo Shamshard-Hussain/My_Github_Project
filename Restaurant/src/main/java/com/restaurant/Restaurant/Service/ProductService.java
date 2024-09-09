@@ -27,6 +27,8 @@ public class ProductService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private ProductRepository productRepository;
 
     public void addProduct(String productName, double price, String category, String description, MultipartFile image) throws IOException {
         System.out.println("Adding product: " + productName);
@@ -106,7 +108,13 @@ public class ProductService {
         return mongoTemplate.find(query, Product.class);
     }
 
+    public List<Product> getProductsByCategory(String category) {
+        return productRepository.findByCategory(category);
+    }
 
+    public List<Product> getAllProductsReport() {
+        return productRepository.findAll();
+    }
 }
 
 

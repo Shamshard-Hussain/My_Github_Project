@@ -261,5 +261,8 @@ public class RestaurantService {
         return billRepository.findByBillId(paymentId);
     }
 
-
+    public List<Reservation> getReservationsByDateRange(String fromDate, String toDate) {
+        // Assuming date is stored as a string in the format yyyy-MM-dd
+        return reservationRepository.findByDateBetween(fromDate, toDate);
+    }
 }

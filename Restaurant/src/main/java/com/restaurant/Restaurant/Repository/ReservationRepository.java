@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends MongoRepository<Reservation, String> {
     List<Reservation> findByUserId(Integer userId);
+    List<Reservation> findByDateBetween(String fromDate, String toDate);
 }

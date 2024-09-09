@@ -23,7 +23,6 @@ public class Payment {
     private String type;
     private String description;
     private BigDecimal amount;
-    private LocalDate date;
+    private LocalDate date;  // Changed to LocalDate
     private String status;
-
 }
