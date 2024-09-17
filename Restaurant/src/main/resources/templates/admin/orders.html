@@ -22,13 +22,13 @@
     <a href="productsPage.html" th:href="@{/admin/productsPage}"><ion-icon name="pizza-outline"></ion-icon>Products</a>
     <a href="Inquiry.html" th:href="@{/admin/Inquiry}"><ion-icon name="notifications-outline"></ion-icon>Inquiry</a>
     <a href="reservations.html" th:href="@{/admin/reservations}"><ion-icon name="calendar-outline"></ion-icon>Reservation</a>
-    <a class="active" href="orders.html"  th:href="@{/admin/orders}"><ion-icon name="cart-outline"></ion-icon>Orders</a>
+    <a class="active" href="orders.html" th:href="@{/admin/orders}"><ion-icon name="cart-outline"></ion-icon>Orders</a>
     <a href="locations.html" th:href="@{/admin/locations}"><ion-icon name="location-outline"></ion-icon>Locations</a>
     <a  href="Services.html" th:href="@{/admin/Services}"><ion-icon name="construct-outline"></ion-icon>Service</a>
     <a  href="gallery1.html" th:href="@{/admin/gallery1}"><ion-icon name="image-outline"></ion-icon>Gallery</a>
     <a href="ImageCards.html" th:href="@{/admin/ImageCards}"><ion-icon name="image-outline"></ion-icon>Images</a>
     <a href="profile.html" th:href="@{/admin/profile}"> <ion-icon name="person-outline"></ion-icon>Account</a>
-    <a href="#"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
+    <a href="adminReport.html"  th:href="@{/admin/adminReport}"><ion-icon name="receipt-outline"></ion-icon>Reports</a>
   </div>
   <!-- Logout -->
   <div class="sidebar-logout">
@@ -157,7 +157,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const viewBillBtn = document.getElementById('view-bill');
+    const viewBillBtns = document.querySelectorAll('#view-bill'); // Select all buttons with the class 'view-bill'
     const invoiceModal = document.getElementById('invoiceModal');
     const closeModalBtn = document.getElementById('invove-close-modal');
 
@@ -169,52 +169,55 @@
       invoiceModal.style.display = 'none';
     }
 
-    viewBillBtn.addEventListener('click', function() {
-      const paymentId = viewBillBtn.getAttribute('data-payment-id');
-      const userId = viewBillBtn.getAttribute('data-user-id');
-      const paymentDate = viewBillBtn.getAttribute('data-payment-date');
+    // Loop through each "View Bill" button and attach event listener
+    viewBillBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const paymentId = btn.getAttribute('data-payment-id');
+        const userId = btn.getAttribute('data-user-id');
+        const paymentDate = btn.getAttribute('data-payment-date');
 
-      // Fetch user details
-      fetch(`/admin/user/${userId}`)
-              .then(response => response.json())
-              .then(user => {
-                document.getElementById('customerName').textContent = `${user.firstName} ${user.lastName}`;
-                document.getElementById('customerEmail').textContent = user.email;
-                document.getElementById('customerPhone').textContent = user.phone;
-              })
-              .catch(err => console.error("Error fetching user data:", err));
+        // Fetch user details
+        fetch(`/admin/user/${userId}`)
+                .then(response => response.json())
+                .then(user => {
+                  document.getElementById('customerName').textContent = `${user.firstName} ${user.lastName}`;
+                  document.getElementById('customerEmail').textContent = user.email;
+                  document.getElementById('customerPhone').textContent = user.phone;
+                })
+                .catch(err => console.error("Error fetching user data:", err));
 
-      // Fetch bill details
-      fetch(`/admin/bills/${paymentId}`)
-              .then(response => response.json())
-              .then(bills => {
-                let totalAmount = 0;
-                const invoiceItemsEl = document.getElementById('invoiceItems');
-                invoiceItemsEl.innerHTML = ''; // Clear previous items
+        // Fetch bill details
+        fetch(`/admin/bills/${paymentId}`)
+                .then(response => response.json())
+                .then(bills => {
+                  let totalAmount = 0;
+                  const invoiceItemsEl = document.getElementById('invoiceItems');
+                  invoiceItemsEl.innerHTML = ''; // Clear previous items
 
-                if (bills.length === 0) {
-                  invoiceItemsEl.innerHTML = '<tr><td colspan="4">No items found for this payment.</td></tr>';
-                } else {
-                  bills.forEach(bill => {
-                    const itemRow = document.createElement('tr');
-                    itemRow.innerHTML = `
-                            <td>${bill.productName}</td>
-                            <td>${bill.quantity}</td>
-                            <td>${bill.price.toFixed(2)}</td>
-                            <td>Rs ${(bill.quantity * bill.price).toFixed(2)}</td>
-                        `;
-                    totalAmount += bill.quantity * bill.price;
-                    invoiceItemsEl.appendChild(itemRow);
-                  });
+                  if (bills.length === 0) {
+                    invoiceItemsEl.innerHTML = '<tr><td colspan="4">No items found for this payment.</td></tr>';
+                  } else {
+                    bills.forEach(bill => {
+                      const itemRow = document.createElement('tr');
+                      itemRow.innerHTML = `
+                <td>${bill.productName}</td>
+                <td>${bill.quantity}</td>
+                <td>${bill.price.toFixed(2)}</td>
+                <td>Rs ${(bill.quantity * bill.price).toFixed(2)}</td>
+              `;
+                      totalAmount += bill.quantity * bill.price;
+                      invoiceItemsEl.appendChild(itemRow);
+                    });
 
-                  document.getElementById('total').textContent = `Rs ${totalAmount.toFixed(2)}`;
-                }
+                    document.getElementById('total').textContent = `Rs ${totalAmount.toFixed(2)}`;
+                  }
 
-                document.getElementById('invoiceDate').textContent = new Date(paymentDate).toLocaleDateString();
-              })
-              .catch(err => console.error("Error fetching bill data:", err));
+                  document.getElementById('invoiceDate').textContent = new Date(paymentDate).toLocaleDateString();
+                })
+                .catch(err => console.error("Error fetching bill data:", err));
 
-      openModal();
+        openModal();
+      });
     });
 
     closeModalBtn.addEventListener('click', closeModal);
@@ -226,7 +229,6 @@
       }
     });
   });
-
 
 </script>
 

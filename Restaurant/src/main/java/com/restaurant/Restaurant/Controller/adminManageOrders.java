@@ -1,7 +1,10 @@
 package com.restaurant.Restaurant.Controller;
 
+import com.restaurant.Restaurant.Model.Locations;
 import com.restaurant.Restaurant.Model.Reservation;
 import com.restaurant.Restaurant.Service.RestaurantService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +24,29 @@ public class adminManageOrders {
     private RestaurantService restaurantService;
 
 
+
     @GetMapping("/reservations")
-    public String showReservations(Model model) {
-        List<Reservation> reservations = restaurantService.getAllReservations();
-        model.addAttribute("reservations", reservations);
-        return "/admin/reservations"; // return the name of your Thymeleaf template
+    public String showReservations(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        String userType = (String) session.getAttribute("role");
+
+        // Check if userType is neither Admin nor Staff
+        if (userType == null || (!userType.equals("Admin") && !userType.equals("Staff"))) {
+            model.addAttribute("accessDenied", true);
+            return "admin/adminHome"; // Redirect to Home in if session is not set
+        }
+
+        if (userId != null) {
+            List<Reservation> reservations = restaurantService.getAllReservations();
+            model.addAttribute("reservations", reservations);
+            return "/admin/reservations"; // return the name of your Thymeleaf template
+        } else {
+            return "redirect:/login"; // Redirect to log in if session is not set
+        }
     }
+
+
 
     @PostMapping("/updateReservationStatus")
     public String updateReservationStatus(@RequestParam("reservationId") String reservationId,

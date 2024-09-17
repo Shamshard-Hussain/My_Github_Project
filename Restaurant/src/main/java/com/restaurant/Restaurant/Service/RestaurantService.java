@@ -1,15 +1,14 @@
 package com.restaurant.Restaurant.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 
 
 import com.restaurant.Restaurant.Model.*;
-import com.restaurant.Restaurant.Repository.BillRepository;
-import com.restaurant.Restaurant.Repository.ContactMessageRepository;
-import com.restaurant.Restaurant.Repository.ReservationRepository;
+import com.restaurant.Restaurant.Repository.*;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import com.restaurant.Restaurant.Repository.UserRepository;
 
 @Service
 public class RestaurantService {
@@ -39,6 +37,9 @@ public class RestaurantService {
 
     @Autowired
     private ContactMessageRepository contactMessageRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     public User addUser(User user) {
         Optional<User> existingUserByEmail = repository.findByEmail(user.getEmail());
@@ -255,7 +256,25 @@ public class RestaurantService {
         }
     }
 
+    public long getTotalReservationCount() {
+        return reservationRepository.count();
+    }
 
+
+    public long getNewReservationCount() {
+        return reservationRepository.countByStatus("Pending");
+    }
+
+    public long countNewFoodOrders() {
+        return paymentRepository.countByTypeAndStatus("Food-Order", "New");
+    }
+
+    public long countNewMessages() {
+        return contactMessageRepository.countByStatus("New");
+    }
+    public long getTotalInquiryCount() {
+        return contactMessageRepository.count();
+    }
 
     public List<Bill> getBillsByPaymentId(String paymentId) {
         return billRepository.findByBillId(paymentId);
@@ -265,4 +284,6 @@ public class RestaurantService {
         // Assuming date is stored as a string in the format yyyy-MM-dd
         return reservationRepository.findByDateBetween(fromDate, toDate);
     }
+
+
 }

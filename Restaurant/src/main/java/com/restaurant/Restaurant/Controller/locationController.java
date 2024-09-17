@@ -2,6 +2,7 @@ package com.restaurant.Restaurant.Controller;
 
 
 import com.restaurant.Restaurant.Model.Locations;
+import com.restaurant.Restaurant.Model.Payment;
 import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Service.LocationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +30,19 @@ public class locationController {
     private LocationService service;
 
 
+
+
     @GetMapping("/locations")
     public String Services(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        String userType = (String) session.getAttribute("role");
+
+        // Check if userType is neither Admin nor Staff
+        if (userType == null || (!userType.equals("Admin") && !userType.equals("Staff"))) {
+            model.addAttribute("accessDenied", true);
+            return "admin/adminHome"; // Redirect to Home in if session is not set
+        }
 
         if (userId != null) {
             model.addAttribute("userId", userId);
@@ -43,7 +53,6 @@ public class locationController {
             return "redirect:/login"; // Redirect to log in if session is not set
         }
     }
-
 
 
     @PostMapping("/addLocations")

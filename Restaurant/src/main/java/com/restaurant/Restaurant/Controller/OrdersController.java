@@ -45,7 +45,7 @@ public class OrdersController {
         // Check if userType is neither Admin nor Staff
         if (userType == null || (!userType.equals("Admin") && !userType.equals("Staff"))) {
             model.addAttribute("accessDenied", true);
-            return "redirect:/login"; // Redirect to log in if session is not set
+            return "admin/adminHome"; // Redirect to log in if session is not set
         }
 
         if (userId != null) {

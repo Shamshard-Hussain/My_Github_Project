@@ -17,7 +17,7 @@ public class Reservation {
     private String name;
     private String phone;
     private int persons;
-    private String Status;
+    private String status;
     private int userId;
 
 

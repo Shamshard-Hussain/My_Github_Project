@@ -40,7 +40,7 @@ public class StaffAccountController {
         // Check if userType is neither Admin nor Staff
         if (userType == null || (!userType.equals("Admin") )) {
             model.addAttribute("notification", "Access Denied");
-         //   model.addAttribute("accessDenied", true);
+            model.addAttribute("accessDenied", true);
             return "admin/profile"; // Redirect to log in if session is not set
         }
         if (userId != null) {

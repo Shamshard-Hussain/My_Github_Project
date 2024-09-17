@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface BillRepository extends MongoRepository<Bill, String> {
     List<Bill> findByBillId(String paymentId);
+    long countByStatus(String status);
+
 }
+

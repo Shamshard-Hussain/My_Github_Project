@@ -3,11 +3,9 @@ package com.restaurant.Restaurant.Controller;
 import com.restaurant.Restaurant.Model.Payment;
 import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Model.Reservation;
-import com.restaurant.Restaurant.Repository.ProductRepository;
 import com.restaurant.Restaurant.Repository.ReservationRepository;
 import com.restaurant.Restaurant.Service.PaymentService;
 import com.restaurant.Restaurant.Service.ProductService;
-import com.restaurant.Restaurant.Service.RestaurantService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.poi.ss.usermodel.*;
@@ -37,9 +35,6 @@ public class ReportController {
     private ProductService productService;
 
     @Autowired
-    private RestaurantService restaurantService;
-
-    @Autowired
     private PaymentService paymentService;
 
     @Autowired
@@ -52,7 +47,7 @@ public class ReportController {
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff
-        if (userType == null || (!userType.equals("Admin") && !userType.equals("Staff"))) {
+        if (userType == null || (!userType.equals("Admin"))) {
             model.addAttribute("accessDenied", true);
             return "redirect:/admin/adminHome"; // Redirect to log in if session is not set
         }
@@ -71,8 +66,6 @@ public class ReportController {
         String dateFrom = filters.get("dateFrom");
         String dateTo = filters.get("dateTo");
 
-        System.out.println("Filtering Reservations from " + dateFrom + " to " + dateTo);
-
         List<Reservation> filteredReservations = reservationRepository.findByDateBetween(dateFrom, dateTo);
 
         return ResponseEntity.ok(filteredReservations);
@@ -86,8 +79,6 @@ public class ReportController {
         // Fetching filtered reservations
         List<Reservation> filteredReservations = reservationRepository.findByDateBetween(dateFrom, dateTo);
 
-        // Log the size of the filtered reservations
-        System.out.println("Number of reservations fetched: " + filteredReservations.size());
 
         // Check if any data is fetched
         for (Reservation reservation : filteredReservations) {
@@ -135,7 +126,6 @@ public class ReportController {
                 .body(excelFile);
     }
 
-
     @PostMapping("/downloadProductsExcel")
     public ResponseEntity<byte[]> downloadFilteredProductsExcel(@RequestBody Map<String, String> filters) throws IOException {
         String category = filters.get("category");
@@ -159,7 +149,8 @@ public class ReportController {
             headerRow.createCell(0).setCellValue("Product ID");
             headerRow.createCell(1).setCellValue("Product Name");
             headerRow.createCell(2).setCellValue("Category");
-            headerRow.createCell(3).setCellValue("Price");
+            headerRow.createCell(3).setCellValue("Description");
+            headerRow.createCell(4).setCellValue("Price");
 
             // Create data rows
             int rowIdx = 1;
@@ -168,7 +159,8 @@ public class ReportController {
                 row.createCell(0).setCellValue(product.getId());
                 row.createCell(1).setCellValue(product.getProductName());
                 row.createCell(2).setCellValue(product.getCategory());
-                row.createCell(3).setCellValue(product.getPrice());
+                row.createCell(3).setCellValue(product.getDescription());
+                row.createCell(4).setCellValue(product.getPrice());
             }
 
             workbook.write(outputStream);
@@ -183,7 +175,6 @@ public class ReportController {
                 .headers(headers)
                 .body(excelFile);
     }
-
 
     @PostMapping("/filterProducts")
     public ResponseEntity<?> filterByCategory(@RequestBody Map<String, String> filters) {
@@ -221,8 +212,6 @@ public class ReportController {
         }
     }
 
-
-
     @PostMapping("/filterPayments")
     public ResponseEntity<List<Payment>> filterPayments(@RequestBody Map<String, String> filters) {
         try {
@@ -257,7 +246,7 @@ public class ReportController {
             String type = filters.get("type");
             String dateFromStr = filters.get("dateFrom");
             String dateToStr = filters.get("dateTo");
-            
+
 
             if (type == null || dateFromStr == null || dateToStr == null) {
                 return ResponseEntity.badRequest().body(null);

@@ -76,6 +76,94 @@ body {
     border-radius: 50px;
 }
 
+.admin-dashboard {
+    position: relative;
+}
+
+.admin-dashboard header {
+    background-color: var(--primaryColor);
+    color: var(--whiteColor);
+    padding: 20px;
+    text-align: center;
+    position: relative; /* Position relative for the profile icon positioning */
+}
+
+.admin-dashboard header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+.admin-dashboard .profile-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.admin-dashboard .profile-icon a {
+    color: var(--whiteColor);
+    font-size: 2em;
+    text-decoration: none;
+}
+
+.admin-dashboard .profile-icon ion-icon {
+    vertical-align: middle;
+}
+
+.admin-dashboard .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.admin-dashboard .card {
+    background: var(--whiteColor);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--borderColor);
+}
+
+.admin-dashboard .card h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: var(--primaryColor);
+}
+
+.admin-dashboard .card p {
+    font-size: 2em;
+    margin: 10px 0 0;
+    color: var(--blackColor);
+}
+
+.admin-dashboard .charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.admin-dashboard .chart-container {
+    background: var(--whiteColor);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--borderColor);
+}
+
+.admin-dashboard .chart-container h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: var(--primaryColor);
+}
+
+.admin-dashboard canvas {
+    max-width: 100%;
+    height: auto;
+}
+
 .main {
     width: 100%;
     height: max-content;
@@ -492,9 +580,20 @@ back-menus:hover,
 
 .adminPopup .adminClose {
     position: absolute;
-    top: 5px;
+    top: 10px;
     right: 10px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .addBody {
@@ -670,12 +769,21 @@ table thead th {
 }
 
 .close {
-    color: #000;
     position: absolute;
-    top: 0; /* Adjust as needed */
-    right: 10px; /* Adjust as needed */
-    font-size: 1.5rem; /* Adjusted to Bootstrap font size */
-    font-weight: bold;
+    top: 10px;
+    right: 10px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 .close:hover,
@@ -1047,6 +1155,7 @@ table thead th {
     display: block;
     font-size: 14px;
     color: #555;
+    margin-top: 8px;
     margin-bottom: 8px;
 }
 

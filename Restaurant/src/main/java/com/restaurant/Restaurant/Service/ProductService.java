@@ -115,6 +115,11 @@ public class ProductService {
     public List<Product> getAllProductsReport() {
         return productRepository.findAll();
     }
+
+    public long getTotalProductCount() {
+        return productRepository.count();
+    }
+
 }
 
 
