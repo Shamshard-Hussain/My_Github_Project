@@ -1,14 +1,12 @@
 package com.restaurant.Restaurant.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
-
-
-import com.restaurant.Restaurant.Model.*;
-import com.restaurant.Restaurant.Repository.*;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,17 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import com.restaurant.Restaurant.Model.Bill;
+import com.restaurant.Restaurant.Model.ContactMessage;
+import com.restaurant.Restaurant.Model.Payment;
+import com.restaurant.Restaurant.Model.Reservation;
+import com.restaurant.Restaurant.Model.User;
+import com.restaurant.Restaurant.Repository.BillRepository;
+import com.restaurant.Restaurant.Repository.ContactMessageRepository;
+import com.restaurant.Restaurant.Repository.PaymentRepository;
+import com.restaurant.Restaurant.Repository.ReservationRepository;
+import com.restaurant.Restaurant.Repository.UserRepository;
 
 @Service
 public class RestaurantService {
@@ -41,6 +50,10 @@ public class RestaurantService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    
+    @Autowired
+    private BillRepository billRepository;
+
     public User addUser(User user) {
         Optional<User> existingUserByEmail = repository.findByEmail(user.getEmail());
 
@@ -54,8 +67,6 @@ public class RestaurantService {
         }
     }
 
-    @Autowired
-    private BillRepository billRepository;
     public Optional<User> findUserByEmail(String email) {
         User user = userStore.get(email);
         return repository.findByEmail(email);
@@ -120,7 +131,7 @@ public class RestaurantService {
 
 
 
-    // Method to update user password
+    
     public void updatePassword(User user, String newPassword) {
         // Hash the new password using BCrypt
         String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
@@ -156,7 +167,7 @@ public class RestaurantService {
 
 
     public boolean verifyPayment(String cardHolderName, String cardNumber, String expiryDate, String cvc) {
-        // Simple regex patterns for basic validation
+        // regex patterns for basic validation
         String cardHolderNamePattern = "^[A-Za-z ]{2,30}$";
         String cardNumberPattern = "^\\d{4}-\\d{4}-\\d{4}-\\d{4}$";
         String expiryDatePattern = "^(0[1-9]|1[0-2])/(\\d{2})$";
@@ -172,16 +183,22 @@ public class RestaurantService {
 
 
     public void saveContactMessage(String name, String email, String message) throws IOException {
-        int uniqueId = generateUniqueId();
-        ContactMessage msg = new ContactMessage();
-        msg.setId(uniqueId); // Set the generated ID
-        msg.setName(name);
-        msg.setEmail(email);
-        msg.setMessage(message);
-        msg.setStatus("New");
-        msg.setDate(LocalDate.now().toString()); // Set date to today's date
-        mongoTemplate.save(msg);
+        try {
+            int uniqueId = generateUniqueId();
+            ContactMessage msg = new ContactMessage();
+            msg.setId(uniqueId); // Set the generated ID
+            msg.setName(name);
+            msg.setEmail(email);
+            msg.setMessage(message);
+            msg.setStatus("New");
+            msg.setDate(LocalDate.now().toString()); // Set date to today's date
+            mongoTemplate.save(msg);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the error
+            // Handle the error gracefully
+        }
     }
+
 
     public List<ContactMessage> getAllContactMessages() {
         return contactMessageRepository.findAll();
@@ -193,10 +210,18 @@ public class RestaurantService {
         mongoTemplate.updateFirst(query, update, ContactMessage.class);
     }
 
-    private int generateUniqueId() {
-        Integer lastId = mongoTemplate.findOne(new Query().with(Sort.by(Sort.Order.desc("id"))), ContactMessage.class).getId();
-        return (lastId != null ? lastId : 0) + 1;
+    public int generateUniqueId() {
+        Query query = new Query(); // Define your criteria here
+        ContactMessage contactMessage = mongoTemplate.findOne(query, ContactMessage.class);
+
+        if (contactMessage == null) {
+            System.err.println("No ContactMessage found for the given query.");
+            return 1; // or another default value, or handle it differently
+        }
+        // Implement your logic to generate a unique ID based on existing records
+        return contactMessage.getId() + 1; // Example logic, adjust as needed
     }
+
     public void updateReservationStatus(String reservationId, String newStatus, Integer userId,String date, String time) throws IOException {
         // Find the existing reservation document
         Reservation reservation = mongoTemplate.findById(reservationId, Reservation.class);
@@ -218,7 +243,7 @@ public class RestaurantService {
                     sendEmailWithCode(userEmail, subject, message);
                 }
             } else {
-                // Optionally handle the case where the status hasn't changed
+           
                 System.out.println("Status is already " + newStatus);
             }
         } else {

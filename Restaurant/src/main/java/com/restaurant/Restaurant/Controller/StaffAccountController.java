@@ -1,21 +1,16 @@
 package com.restaurant.Restaurant.Controller;
 
-import com.restaurant.Restaurant.Model.ServicesClass;
+
 import com.restaurant.Restaurant.Model.User;
 import com.restaurant.Restaurant.Service.RestaurantService;
-import com.restaurant.Restaurant.Service.Services;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -24,9 +19,6 @@ import java.util.*;
 @RequestMapping("/admin")
 public class StaffAccountController {
     @Autowired
-    private GridFsTemplate gridFsTemplate;
-
-    @Autowired
     private RestaurantService Service;
 
 
@@ -34,7 +26,7 @@ public class StaffAccountController {
     @GetMapping("/profile")
     public String getUsersByRole(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId"); 
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff

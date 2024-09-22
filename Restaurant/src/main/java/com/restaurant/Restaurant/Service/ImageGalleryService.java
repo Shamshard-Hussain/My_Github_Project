@@ -2,13 +2,11 @@ package com.restaurant.Restaurant.Service;
 
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
-import com.mongodb.client.gridfs.GridFSDownloadStream;
-import com.mongodb.client.gridfs.GridFSFindIterable;
-import com.mongodb.client.gridfs.model.GridFSFile;
+
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.restaurant.Restaurant.Model.HomeImageGallery;
 import com.restaurant.Restaurant.Model.ImageCard;
-import org.apache.commons.io.IOUtils;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
-import java.awt.*;
 import java.io.*;
 import java.util.List;
 import java.util.UUID;

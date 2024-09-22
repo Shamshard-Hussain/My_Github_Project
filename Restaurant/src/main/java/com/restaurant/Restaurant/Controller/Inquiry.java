@@ -1,8 +1,6 @@
 package com.restaurant.Restaurant.Controller;
 
 import com.restaurant.Restaurant.Model.ContactMessage;
-import com.restaurant.Restaurant.Model.Product;
-import com.restaurant.Restaurant.Service.ProductService;
 import com.restaurant.Restaurant.Service.RestaurantService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -33,7 +31,7 @@ public class Inquiry {
     public String getInquiries(HttpServletRequest request,Model model) {
 
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff

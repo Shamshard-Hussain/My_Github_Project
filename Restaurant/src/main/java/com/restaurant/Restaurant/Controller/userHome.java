@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.*;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +20,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -62,7 +59,7 @@ public class userHome {
     @GetMapping("/userHome")
     public String userHome(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId"); 
 
         if (userId != null) {
             model.addAttribute("userId", userId);
@@ -75,7 +72,6 @@ public class userHome {
             List<ServicesClass> services = service.getAllImage();
             model.addAttribute("services", services);
             List<ImageCard> imageCards = imageGalleryService.getAllImageCards();
-            // Add the imageCards list to the model, so it can be accessed in the view
             model.addAttribute("imageCards", imageCards);
 
             return "user/userHome"; // Return the user home page template
@@ -150,10 +146,10 @@ public class userHome {
         restaurantService.savePayment(payment);
         System.out.println("Reservation saved successfully: " + reservation);
 
-        // Redirect or return a view based on your needs
+  
         model.addAttribute("success", "Reservation successful!");
         model.addAttribute("reservation", reservation);
-        return "redirect:/user/userHome#reservation"; // Return the user home page template
+        return "redirect:/user/userHome#reservation"; 
     }
 
 

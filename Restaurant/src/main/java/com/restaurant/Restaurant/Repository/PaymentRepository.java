@@ -1,16 +1,14 @@
 package com.restaurant.Restaurant.Repository;
 
-import com.restaurant.Restaurant.Model.Bill;
-import com.restaurant.Restaurant.Model.Payment;
-import org.springframework.data.annotation.Id;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.restaurant.Restaurant.Model.Payment;
 
 @Repository
 public interface PaymentRepository extends MongoRepository<Payment, String> {

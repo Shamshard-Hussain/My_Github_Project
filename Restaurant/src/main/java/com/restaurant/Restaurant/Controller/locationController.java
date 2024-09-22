@@ -2,13 +2,10 @@ package com.restaurant.Restaurant.Controller;
 
 
 import com.restaurant.Restaurant.Model.Locations;
-import com.restaurant.Restaurant.Model.Payment;
-import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Service.LocationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,13 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
 public class locationController {
-    @Autowired
-    private GridFsTemplate gridFsTemplate;
 
     @Autowired
     private LocationService service;
@@ -35,7 +29,7 @@ public class locationController {
     @GetMapping("/locations")
     public String Services(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff
@@ -67,7 +61,7 @@ public class locationController {
      try{
          service.saveLocation(id, city, address, phone, email, image); return "redirect:/admin/locations?message=success&operation=add";
      } catch (Exception e) {
-         return "redirect:/admin/locations?message=error&operation=add";// Redirect to a locations page
+         return "redirect:/admin/locations?message=error&operation=add";
      }
 
     }

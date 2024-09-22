@@ -3,8 +3,6 @@ package com.restaurant.Restaurant.Service;
 import com.restaurant.Restaurant.Model.IncomeResult;
 import com.restaurant.Restaurant.Model.Payment;
 import com.restaurant.Restaurant.Repository.PaymentRepository;
-import com.restaurant.Restaurant.Repository.ProductRepository;
-import com.restaurant.Restaurant.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -30,11 +28,6 @@ public class PaymentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -60,7 +53,7 @@ public class PaymentService {
         Optional<Payment> paymentOpt = paymentRepository.findById(id);
         if (paymentOpt.isPresent()) {
             Payment payment = paymentOpt.get();
-            payment.setStatus(status); // Assuming 'type' field represents status
+            payment.setStatus(status); 
             paymentRepository.save(payment);
         }
     }

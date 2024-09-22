@@ -1,36 +1,23 @@
 package com.restaurant.Restaurant.Controller;
 
-import com.mongodb.client.gridfs.model.GridFSFile;
 import com.restaurant.Restaurant.Model.HomeImageGallery;
-import com.restaurant.Restaurant.Model.Product;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import com.restaurant.Restaurant.Service.ImageGalleryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.management.Query;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
 public class GalleryController {
 
-    @Autowired
-    private GridFsTemplate gridFsTemplate;
 
     @Autowired
     private ImageGalleryService imageGalleryService;
@@ -41,13 +28,13 @@ public class GalleryController {
         Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
-        // Check if userType is neither Admin nor Staff
+
         if (userType == null || (!userType.equals("Admin") && !userType.equals("Staff"))) {
             model.addAttribute("accessDenied", true);
             return "admin/adminHome"; // Redirect to log in if session is not set
         }
 
-        // If userType is valid
+
         if (userId != null) {
             model.addAttribute("userId", userId);
             model.addAttribute("userType", userType); // Add userType to the model
@@ -105,5 +92,3 @@ public class GalleryController {
     }
 
 }
-
-//  return "redirect:/admin/gallery1"; // Redirect to the gallery page

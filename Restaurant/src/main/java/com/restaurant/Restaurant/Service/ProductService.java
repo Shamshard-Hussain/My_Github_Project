@@ -4,17 +4,14 @@ package com.restaurant.Restaurant.Service;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
-import com.restaurant.Restaurant.Model.HomeImageGallery;
 import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Repository.ProductRepository;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.bson.types.ObjectId;
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,7 +91,7 @@ public class ProductService {
                 product.setImageId(fileId.toString());
             }
 
-            // Save the updated product
+            // Save 
             mongoTemplate.save(product);
         }
     }

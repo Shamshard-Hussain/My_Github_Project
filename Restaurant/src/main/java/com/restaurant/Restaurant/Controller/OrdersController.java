@@ -2,25 +2,18 @@ package com.restaurant.Restaurant.Controller;
 
 import com.restaurant.Restaurant.Model.Bill;
 import com.restaurant.Restaurant.Model.Payment;
-import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Model.User;
-import com.restaurant.Restaurant.Repository.UserRepository;
 import com.restaurant.Restaurant.Service.PaymentService;
 import com.restaurant.Restaurant.Service.RestaurantService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -31,15 +24,12 @@ public class OrdersController {
     @Autowired
     private RestaurantService billService;
 
-    @Autowired
-    private UserRepository userRepository;
-
 
 
     @GetMapping("/orders")
     public String products(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff

@@ -189,10 +189,10 @@
             <input type="text" id="editPhone" name="phone" class="form-control" pattern="\d{10,15}" title="Please enter a valid phone number with 10-15 digits" required>
 
             <label for="editPassword">Password</label>
-            <input type="password" id="editPassword" name="password" class="form-control" required>
+            <input type="password" id="editPassword" name="password" class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}" title="Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character" required>
 
             <label for="editConfirmPassword">Confirm Password</label>
-            <input type="password" id="editConfirmPassword" name="confirmPassword" class="form-control" required>
+            <input type="password" id="editConfirmPassword" name="confirmPassword" class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}" title="Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character" required>
 
             <button type="submit" class="btn btn-primary mt-3" id="updateButton">Update User</button>
         </form>

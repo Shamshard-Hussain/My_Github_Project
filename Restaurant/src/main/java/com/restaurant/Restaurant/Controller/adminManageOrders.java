@@ -1,20 +1,16 @@
 package com.restaurant.Restaurant.Controller;
 
-import com.restaurant.Restaurant.Model.Locations;
 import com.restaurant.Restaurant.Model.Reservation;
 import com.restaurant.Restaurant.Service.RestaurantService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -28,7 +24,7 @@ public class adminManageOrders {
     @GetMapping("/reservations")
     public String showReservations(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff
@@ -40,7 +36,7 @@ public class adminManageOrders {
         if (userId != null) {
             List<Reservation> reservations = restaurantService.getAllReservations();
             model.addAttribute("reservations", reservations);
-            return "/admin/reservations"; // return the name of your Thymeleaf template
+            return "/admin/reservations";
         } else {
             return "redirect:/login"; // Redirect to log in if session is not set
         }
@@ -59,7 +55,7 @@ public class adminManageOrders {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/admin/reservations"; // Redirect to the reservations page or any desired page
+        return "redirect:/admin/reservations"; 
     }
 
 
@@ -74,7 +70,7 @@ public class adminManageOrders {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/admin/reservations"; // Redirect to the reservations page or any desired page
+        return "redirect:/admin/reservations";
     }
 
 

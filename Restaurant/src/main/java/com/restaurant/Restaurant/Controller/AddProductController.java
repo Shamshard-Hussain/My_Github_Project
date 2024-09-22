@@ -30,7 +30,7 @@ public class AddProductController {
     public String showProductPage(HttpServletRequest request,Model model) {
 
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff

@@ -1,13 +1,10 @@
 package com.restaurant.Restaurant.Controller;
 
-import com.restaurant.Restaurant.Model.HomeImageGallery;
 import com.restaurant.Restaurant.Model.ServicesClass;
-import com.restaurant.Restaurant.Service.ImageGalleryService;
 import com.restaurant.Restaurant.Service.Services;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,8 +19,6 @@ import java.util.List;
 @RequestMapping("/admin")
 public class ServiceController {
 
-    @Autowired
-    private GridFsTemplate gridFsTemplate;
 
     @Autowired
     private Services imageGalleryService;
@@ -31,7 +26,7 @@ public class ServiceController {
     @GetMapping("/Services")
     public String Services(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId"); 
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff
@@ -68,7 +63,7 @@ public class ServiceController {
     public ResponseEntity<String> deleteServices(@PathVariable String id) {
         try {
             imageGalleryService.deleteServicesGallery(id);
-            return ResponseEntity.noContent().build(); //  Content for successful delete
+            return ResponseEntity.noContent().build(); //  successful delete
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

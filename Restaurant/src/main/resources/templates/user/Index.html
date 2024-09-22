@@ -98,14 +98,14 @@
 
     <div class="food-items" >
       <!-- item -->
-      <div class="food-item " th:each="product : ${products}">
+      <div class="food-item" th:each="product : ${products}">
         <div class="food-img">
           <img th:src="@{/admin/image/{id}(id=${product.imageId})}" alt="food image">
         </div>
         <div class="food-content">
-          <h2 class="food-name" th:text="${product.productName}">Banana Bread With Butter & Milk</h2>
+          <h2 class="food-name" th:text="${product.productName}"></h2>
           <div class="line"></div>
-          <h3 class="food-price" th:text="'Rs ' + ${product.price}+ '0'">Price</h3>
+          <h3 class="food-price" th:text="'Rs ' + ${product.price} + '0'">Price</h3>
           <ul class="rating">
             <li><i class="fas fa-star"></i></li>
             <li><i class="fas fa-star"></i></li>
@@ -114,11 +114,25 @@
             <li><i class="far fa-star"></i></li>
           </ul>
           <p class="category">Categories: <span th:text="${product.category}"></span></p>
+          <div class="food-item-buttons">
+            <button class="btn view-btn" th:data-description="${product.description}">
+              <i class="fas fa-eye"></i>
+            </button>
 
+          </div>
         </div>
       </div>
       <!-- end of item -->
     </div>
+
+    <!-- Popup Modal for Product Description -->
+    <div id="descriptionModal" class="product-modal">
+      <div class="product-modal-content">
+        <span class="product-close-btn">&times;</span>
+        <p id="modalProductDescription"></p>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -196,11 +210,11 @@
   <div class="popup-content">
     <span class="close" onclick="togglePopup()">&times;</span>
     <h2>Contact Us</h2>
-    <form action="/user/contact" method="POST">
+    <form id="contactForm">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required>
       <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
+      <input type="email" id="email" name="email" required pattern="[a-zA-Z0-9!#$%&amp;'*+\/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*" title="Please enter a valid email address">
       <label for="message">Message:</label>
       <textarea id="message" name="message" required></textarea>
       <button type="submit">Send</button>

@@ -1,6 +1,5 @@
 package com.restaurant.Restaurant.Controller;
 
-import com.restaurant.Restaurant.Model.Product;
 import com.restaurant.Restaurant.Model.User;
 import com.restaurant.Restaurant.Service.PaymentService;
 import com.restaurant.Restaurant.Service.ProductService;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -39,7 +36,7 @@ public class adminHome {
     @GetMapping("/adminHome")
     public String products(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId"); // Ensure this is Integer
+        Integer userId = (Integer) session.getAttribute("userId");
         String userType = (String) session.getAttribute("role");
 
         // Check if userType is neither Admin nor Staff
@@ -81,7 +78,7 @@ public class adminHome {
 
             return "admin/adminHome";
         } else {
-            return "redirect:/login"; // Redirect to login if session is not set
+            return "redirect:/login"; // Redirect to log in if session is not set
         }
 
 
@@ -90,7 +87,7 @@ public class adminHome {
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false); // Use false to not create a new session
+        HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate(); // Invalidate the session
         }
